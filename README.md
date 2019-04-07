@@ -93,7 +93,7 @@ GPL (>= 2)
 
 ## Authors
 
-Xiaoou Pan <xip024@ucsd.edu>, Wen-Xin Zhou <wez243@ucsd.edu> 
+Xiaoou Pan <xip024@ucsd.edu> and Wen-Xin Zhou <wez243@ucsd.edu> 
 
 ## Reference
 
