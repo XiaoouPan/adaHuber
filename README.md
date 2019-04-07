@@ -10,7 +10,7 @@ Specifically, for Huber regression, assume that the observed data (Y, X) follow 
 
 ## Installation
 
-Install tfHuber from github:
+Install `tfHuber` from github:
 
 ```{r gh-installation, eval = FALSE}
 install.packages("devtools")
@@ -93,7 +93,7 @@ GPL (>= 2)
 
 ## Authors
 
-Xiaoou Pan <xip024@ucsd.edu> and Wen-Xin Zhou <wez243@ucsd.edu> 
+Xiaoou Pan <xip024@ucsd.edu>, Wen-Xin Zhou <wez243@ucsd.edu> 
 
 ## Reference
 
