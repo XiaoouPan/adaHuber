@@ -5,9 +5,10 @@ Version: 1.0
 Date: 2019-04-09
 Author: Xiaoou Pan, Wen-Xin Zhou
 Maintainer: Xiaoou Pan <xip024@ucsd.edu>, Wen-Xin Zhou <wez243@ucsd.edu>
-Description: A C++ implementation of Huber mean estimation, Huber regression and regularized Huber regression (Huber-Lasso).
-             Among all the methods, robustness parameter tau is determined by a tuning-free principle.
-             Huber regression estimators are calculated via iterative weighted least square, and Huber-Lasso estimators are calculated via I-LAMM algorithm.
+Description: A C++ implementation of Huber mean estimation, Huber regression and l1-regularized Huber regression (Huber-Lasso).
+             Among all the methods, the robustification parameter tau is chosen by a tuning-free principle.
+             In low dimensions, Huber regression estimators are calculated via iteratively weighted least squares, 
+             and Huber-Lasso estimators are computed by the I-LAMM algorithm.
 License: GPL-2
 Encoding: UTF-8
 Imports: Rcpp (>= 1.0.0), RcppArmadillo
