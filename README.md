@@ -101,13 +101,13 @@ Eddelbuettel, D. and Francois, R. (2011). Rcpp: Seamless R and C++ Integration. 
 
 Eddelbuettel, D. and Sanderson, C. (2014). RcppArmadillo: Accelerating R with high-performance C++ linear algebra. Comp. Stat. Dat. Ana. 71 1054-1063. (http://dirk.eddelbuettel.com/papers/RcppArmadillo.pdf)
 
-Fan, J., Liu, H., Sun, Q. and Zhang, T. (2018). I-LAMM for sparse learning: Simultaneous control of algorithmic complexity and statistical error. Ann. Statist. 46 814–841. (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6007998/)
+Fan, J., Liu, H., Sun, Q. and Zhang, T. (2018). I-LAMM for sparse learning: Simultaneous control of algorithmic complexity and statistical error. Ann. Statist. 46 814–841. (https://projecteuclid.org/euclid.aos/1522742437)
 
 Pan, X., Sun, Q. and Zhou, W.-X. (2019). Nonconvex regularized robust regression with oracle properties in polynomial time. Preprint. (https://www.math.ucsd.edu/~wez243/NH.pdf).
 
-Sanderson, C. and Curtin, R. (2016). Armadillo: a template-based C++ library for linear algebra. J. Open. Src. Softw. 1 26. (http://conradsanderson.id.au/pdfs/sanderson_armadillo_joss_2016.pdf)
+Sanderson, C. and Curtin, R. (2016). Armadillo: a template-based C++ library for linear algebra. J. Open. Src. Softw. 1(2) 26. (http://conradsanderson.id.au/pdfs/sanderson_armadillo_joss_2016.pdf)
 
-Sun, Q., Zhou, W.-X. and Fan, J. (2018). Adaptive Huber regression, J. Amer. Stat. Assoc, to appear. (https://www.tandfonline.com/doi/abs/10.1080/01621459.2018.1543124)
+Sun, Q., Zhou, W.-X. and Fan, J. (2018). Adaptive Huber regression. J. Amer. Stat. Assoc, to appear. (https://www.tandfonline.com/doi/abs/10.1080/01621459.2018.1543124)
 
 Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. J. R. Stat. Soc. Ser. B. Stat. Methodol. 58 267–288. (https://www.jstor.org/stable/2346178?seq=1#metadata_info_tab_contents)
 
