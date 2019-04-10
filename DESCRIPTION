@@ -1,12 +1,16 @@
 Package: tfHuber
 Type: Package
-Title: What the package does (short line)
+Title: Tuning-Free Huber Regression
 Version: 1.0
-Date: 2019-04-05
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
-Imports: Rcpp (>= 1.0.0)
+Date: 2019-04-09
+Author: Xiaoou Pan, Wen-Xin Zhou
+Maintainer: Xiaoou Pan <xip024@ucsd.edu>, Wen-Xin Zhou <wez243@ucsd.edu>
+Description: A C++ implementation of Huber mean estimation, Huber regression and regularized Huber regression (Huber-Lasso).
+             Among all the methods, robustness parameter tau is determined by a tuning-free principle.
+             Huber regression estimators are calculated via iterative weighted least square, and Huber-Lasso estimators are calculated via I-LAMM algorithm.
+License: GPL-2
+Encoding: UTF-8
+Imports: Rcpp (>= 1.0.0), RcppArmadillo
 LinkingTo: Rcpp, RcppArmadillo
+Depends: RcppArmadillo
 RoxygenNote: 6.1.1

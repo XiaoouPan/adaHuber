@@ -9,11 +9,62 @@ rootf1 <- function(resSq, n, low, up, tol = 0.00001, maxIte = 500L) {
     .Call('_tfHuber_rootf1', PACKAGE = 'tfHuber', resSq, n, low, up, tol, maxIte)
 }
 
+#' The function calculates adaptive Huber mean estimator from a data sample, with \eqn{\tau} determined by a tuning-free principle.
+#'
+#' The observed data are \eqn{X}, which is an \eqn{n}-dimensional vector whose distribution can be asymmetrix and/or heavy-tailed. The function outputs a robust estimator for the mean of \eqn{X}.
+#'
+#' @title Tuning-free Huber mean estimation
+#' @param X An \eqn{n}-dimensional data vector.
+#' @param epsilon The tolerance level in the iterative estimation procedure, iteration will stop when \eqn{|\mu_new - \mu_old| < \epsilon} or \eqn{|\tau_new - \tau_old| < \epsilon}. The defalut value is 1e-5.
+#' @param iteMax The maximal number of iteration in the iterative estimation procedure, iteration will stop when this number is reached. The defalut value is 500.
+#' @return A list including the following terms will be returned:
+#' \itemize{
+#' \item \code{mu} The Huber mean estimator.
+#' \item \code{tau} The robustness parameter determined by the tuning-free principle.
+#' \item \code{iteration} The number of iterations in the estimation procedure.
+#' }
+#' @author Xiaoou Pan, Wen-Xin Zhou
+#' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2018). A New Principle for Tuning-Free Huber Regression. Preprint.
+#' @examples
+#' n = 1000
+#' X = rlnorm(n, 0, 1.5) - exp(1.5^2 / 2)
+#' meanList = huberMean(X)
+#' hMean = meanList$mu
 #' @export
 huberMean <- function(X, epsilon = 0.00001, iteMax = 500L) {
     .Call('_tfHuber_huberMean', PACKAGE = 'tfHuber', X, epsilon, iteMax)
 }
 
+#' The function fits adaptive Huber regression via iterative weighted least square, with \eqn{\tau} determined by a tuning-free principle and the intercept term \eqn{\beta_0} estimated via a two-step procedure.
+#'
+#' The observed data are \eqn{(Y, X)}, where \eqn{Y} is an \eqn{n}-dimensional response vector and \eqn{X} is an \eqn{n} by \eqn{d} design matrix with \eqn{d < n}. We assume that \eqn{Y} depends on \eqn{X} through a linear model \eqn{Y = X \beta + \epsilon}, where \eqn{\epsilon} is an \eqn{n}-dimensional noise vector whose distribution can be asymmetrix and/or heavy-tailed. All the arguments except for \eqn{X} and \eqn{Y} have default settings.
+#'
+#' @title Tuning-free Huber regression
+#' @param X An \eqn{n} by \eqn{d} design matrix with each row being a sample and each column being a variable and \eqn{d < n}.
+#' @param Y A continuous response vector with length \eqn{n}.
+#' @param epsilon The tolerance level for the iterative weighted least square, the iteration will stop when \eqn{||\theta_new - \theta_old||_inf < \epsilon} or \eqn{|\tau_new - \tau_old| < \epsilon}. The defalut value is 1e-5.
+#' @param constTau The constant term used to update \eqn{\tau} in the tuning-free procedure. In each round of iteration, \eqn{\tau} is updated to be \code{constTau} \eqn{* \sigma_MAD}, where \eqn{\sigma_MAD = median(|R - median(R)|) / \Phi^(-1)(3/4)} is the median absolute deviation estimator, and \eqn{R} is the residual from last round of iteration. The defalut value is 1.345.
+#' @param iteMax The maximal number of iteration in iterative weighted least square, the iteration stops if this number is reached. The defalut value is 500.
+#' @return A list including the following terms will be returned:
+#' \itemize{
+#' \item \code{theta} The estimated \eqn{\theta}, a vector with length \eqn{d + 1}, with the first one being the value of intercept.
+#' \item \code{tauCoef} The robustness parameter \eqn{\tau} determined by the tuning-free principle to estimate coefficients except for the intercept.
+#' \item \code{tauItcp} The robustness parameter \eqn{\tau} determined by the tuning-free principle to estimate the intercept.
+#' \item \code{iteCoef} The number of iterations in the iterative least square procedure.
+#' \item \code{iteItcp} The number of iterations to estimate the intercept.
+#' }
+#' @author Xiaoou Pan, Wen-Xin Zhou
+#' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2018). A New Principle for Tuning-Free Huber Regression. Preprint.
+#' @seealso \code{\link{cvHuberLasso}}
+#' @examples
+#' n = 500
+#' d = 5
+#' thetaStar = rep(3, d + 1)
+#' X = matrix(rnorm(n * d), n, d)
+#' error = rlnorm(n, 0, 1.5) - exp(1.5^2 / 2)
+#' Y = as.numeric(cbind(rep(1, n), X) %*% thetaStar + error)
+#' listHuber = huberReg(X, Y)
+#' thetaHuber = listHuber$theta
 #' @export
 huberReg <- function(X, Y, epsilon = 0.00001, constTau = 1.345, iteMax = 500L) {
     .Call('_tfHuber_huberReg', PACKAGE = 'tfHuber', X, Y, epsilon, constTau, iteMax)
@@ -71,8 +122,47 @@ pairPred <- function(X, Y, beta) {
     .Call('_tfHuber_pairPred', PACKAGE = 'tfHuber', X, Y, beta)
 }
 
+#' The function fits Huber-Lasso regression via I-LAMM algorithm, with \eqn{\tau} determined by a tuning-free principle, \eqn{\lambda} calibrated by k-folds cross-validation, and the intercept term \eqn{\beta_0} estimated via a two-step procedure.
+#'
+#' The observed data are \eqn{(Y, X)}, where \eqn{Y} is an \eqn{n}-dimensional response vector and \eqn{X} is an \eqn{n} by \eqn{d} design matrix. We assume that \eqn{Y} depends on \eqn{X} through a linear model \eqn{Y = X \beta + \epsilon}, where \eqn{\beta} is a sparse vector and \eqn{\epsilon} is an \eqn{n}-dimensional noise vector whose distribution can be asymmetrix and/or heavy-tailed. All the arguments except for \eqn{X} and \eqn{Y} have default settings.
+#'
+#' @title Tuning-free Huber-Lasso regression
+#' @param X An \eqn{n} by \eqn{d} design matrix with each row being a sample and each column being a variable, either low-dimensional data (\eqn{d \le n}) or high-dimensional data (\eqn{d > n}) are allowed..
+#' @param Y A continuous response vector with length \eqn{n}.
+#' @param lSeq Sequence of tuning parameter of regularized regression \eqn{\lambda}, every element should be positive. If it's not specified, the default sequence is generated in this way: define \eqn{\lambda_max = max(|Y^T X|) / n}, and \eqn{\lambda_min = 0.01 * \lambda_max}, then \code{lseq} is a sequence from \eqn{\lambda_max} to \eqn{\lambda_min} that decreases uniformly on log scale.
+#' @param nlambda Number of \eqn{\lambda} to generate the default sequence \code{lSeq}. It's not necessary if \code{lSeq} is specified. The default value is 30.
+#' @param constTau The constant term used to update \eqn{\tau} in the tuning-free procedure. In each round of iteration, \eqn{\tau} is updated to be \code{constTau} \eqn{* \sigma_MAD}, where \eqn{\sigma_MAD = median(|R - median(R)|) / \Phi^(-1)(3/4)} is the median absolute deviation estimator, and \eqn{R} is the residual from last round of iteration. The defalut value is 1.345.
+#' @param phi0 The initial value of the isotropic parameter \eqn{\phi} in I-LAMM algorithm. The defalut value is 0.001.
+#' @param gamma The inflation parameter in I-LAMM algorithm, in each iteration of I-LAMM, we will inflate \eqn{\phi} by \eqn{\gamma}. The defalut value is 1.5.
+#' @param epsilon_c The tolerance level for I-LAMM algorithm, iteration will stop when \eqn{||\theta_new - \theta_old||_inf < \epsilon_c}. The defalut value is 1e-3.
+#' @param iteMax The maximal number of iteration in I-LAMM algorithm, the iteration stops if this number is reached. The defalut value is 500.
+#' @param nfolds The number of folds to conduct cross validation for \eqn{\lambda}, values that are greater than 10 are not recommended, and it'll be modified to 10 if the input is greater than 10. The default value is 3.
+#' @return A list including the following terms will be returned:
+#' \itemize{
+#' \item \code{theta} The estimated \eqn{\theta}, a vector with length \eqn{d + 1}, with the first one being the value of intercept.
+#' \item \code{lambdaSeq} The sequence of \eqn{\lambda}'s for cross validation.
+#' \item \code{lambdaMin} The value of \eqn{\lambda} in \code{lSeq} that minimized mse in k-fold cross-validation.
+#' \item \code{tauCoef} The robustness parameter \eqn{\tau} determined by the tuning-free principle to estimate coefficients except for the intercept.
+#' \item \code{tauItcp} The robustness parameter \eqn{\tau} determined by the tuning-free principle to estimate the intercept.
+#' \item \code{iteCoef} The number of iterations in I-LAMM algirithm to estimate coefficients.
+#' \item \code{iteItcp} The number of iterations to estimate the intercept.
+#' }
+#' @author Xiaoou Pan, Wen-Xin Zhou
+#' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2018). A New Principle for Tuning-Free Huber Regression. Preprint.
+#' @references Fan, J., Liu, H., Sun, Q. and Zhang, T. (2018). I-LAMM for sparse learning: Simultaneous control of algorithmic complexity and statistical error. Ann. Statist. 46 814–841.
+#' @seealso \code{\link{huberReg}}
+#' @examples
+#' n = 200
+#' d = 500
+#' s = 5
+#' thetaStar = c(rep(3, s + 1), rep(0, d - s))
+#' X = matrix(rnorm(n * d), n, d)
+#' error = rlnorm(n, 0, 1.5) - exp(1.5^2 / 2)
+#' Y = as.numeric(cbind(rep(1, n), X) %*% thetaStar + error)
+#' listHuberLasso = cvHuberLasso(X, Y)
+#' thetaHuberLasso = listHuberLasso$theta
 #' @export
-cvHuberLasso <- function(X, Y, lSeq = NULL, nlambda = 30L, constTau = 1.345, phi0 = 0.001, gamma = 1.5, epsilon_c = 0.001, iteMax = 50L, nfolds = 3L) {
+cvHuberLasso <- function(X, Y, lSeq = NULL, nlambda = 30L, constTau = 1.345, phi0 = 0.001, gamma = 1.5, epsilon_c = 0.001, iteMax = 500L, nfolds = 3L) {
     .Call('_tfHuber_cvHuberLasso', PACKAGE = 'tfHuber', X, Y, lSeq, nlambda, constTau, phi0, gamma, epsilon_c, iteMax, nfolds)
 }
 
