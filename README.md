@@ -4,7 +4,7 @@ Tuning-Free Huber Regression
 
 ## Description
 
-This package implements the Huber mean estimator, adaptive Huber regression and l1-regularized Huber regression (Huber-Lasso) estimators efficiently. For all these methods, the robustification parameter tau is calibrated by a tuning-free principal.
+This package implements the Huber mean estimator, adaptive Huber regression and l1-regularized Huber regression (Huber-Lasso) estimators efficiently. For all these methods, the robustification parameter tau is calibrated by a tuning-free principle.
 
 Specifically, for Huber regression, assume the observed data vectors (Y, X) follow a linear model Y = beta_0 + X * beta + epsilon, where Y is an n-dimensional response vector, X is an n by d design matrix, and epsilon is an n-vector of noise variables whose distributions can be asymmetric and/or heavy-tailed. The package computes the standard Huber's M-estimator when d < n and the Huber-Lasso estimator when d > n. The vector of coefficients beta and the intercept term beta_0 are estimated successively via a two-step procedure. See the reference paper Wang et al. (2018) for more details of the two-step tuning-free framework.
 
