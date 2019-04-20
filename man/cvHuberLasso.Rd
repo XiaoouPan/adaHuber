@@ -28,7 +28,6 @@ cvHuberLasso(X, Y, lSeq = NULL, nlambda = 30L, constTau = 1.345,
 \item{iteMax}{The maximal number of iteration in I-LAMM algorithm, the iteration stops if this number is reached. The defalut value is 500.}
 
 \item{nfolds}{The number of folds to conduct cross validation for \eqn{\lambda}, values that are greater than 10 are not recommended, and it'll be modified to 10 if the input is greater than 10. The default value is 3.}
-}
 \value{
 A list including the following terms will be returned:
 \itemize{
