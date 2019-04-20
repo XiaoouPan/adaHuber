@@ -17,7 +17,7 @@ cvHuberLasso(X, Y, lSeq = NULL, nlambda = 30L, constTau = 1.345,
 
 \item{nlambda}{Number of \eqn{\lambda} to generate the default sequence \code{lSeq}. It's not necessary if \code{lSeq} is specified. The default value is 30.}
 
-\item{constTau}{The constant term used to update \eqn{\tau} in the tuning-free procedure. At each iteration, \eqn{\tau} is updated to be \code{constTau} \eqn{* \sigma_MAD}, where \eqn{\sigma_MAD = median(|R - median(R)|) / \Phi^(-1)(3/4)} is the median absolute deviation estimator, and \eqn{R} is the residual obtained from the last iteration. The defalut value is 1.345 to achieve 95% asymptotic efficiency.}
+\item{constTau}{The constant term used to update \eqn{\tau} in the tuning-free procedure. In each round of iteration, \eqn{\tau} is updated to be \code{constTau} \eqn{* \sigma_MAD}, where \eqn{\sigma_MAD = median(|R - median(R)|) / \Phi^(-1)(3/4)} is the median absolute deviation estimator, and \eqn{R} is the residual from last round of iteration. The defalut value is 1.345.}
 
 \item{phi0}{The initial value of the isotropic parameter \eqn{\phi} in I-LAMM algorithm. The defalut value is 0.001.}
 
@@ -28,6 +28,7 @@ cvHuberLasso(X, Y, lSeq = NULL, nlambda = 30L, constTau = 1.345,
 \item{iteMax}{The maximal number of iteration in I-LAMM algorithm, the iteration stops if this number is reached. The defalut value is 500.}
 
 \item{nfolds}{The number of folds to conduct cross validation for \eqn{\lambda}, values that are greater than 10 are not recommended, and it'll be modified to 10 if the input is greater than 10. The default value is 3.}
+}
 \value{
 A list including the following terms will be returned:
 \itemize{
