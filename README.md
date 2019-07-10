@@ -103,7 +103,7 @@ Eddelbuettel, D. and Sanderson, C. (2014). RcppArmadillo: Accelerating R with hi
 
 Fan, J., Liu, H., Sun, Q. and Zhang, T. (2018). I-LAMM for sparse learning: Simultaneous control of algorithmic complexity and statistical error. Ann. Statist. 46 814–841. (https://projecteuclid.org/euclid.aos/1522742437)
 
-Pan, X., Sun, Q. and Zhou, W.-X. (2019). Nonconvex regularized robust regression with oracle properties in polynomial time. Preprint. (https://www.math.ucsd.edu/~wez243/NH.pdf).
+Pan, X., Sun, Q. and Zhou, W.-X. (2019). Nonconvex regularized robust regression with oracle properties in polynomial time. Preprint. (https://arxiv.org/abs/1907.04027).
 
 Sanderson, C. and Curtin, R. (2016). Armadillo: a template-based C++ library for linear algebra. J. Open. Src. Softw. 1(2) 26. (http://conradsanderson.id.au/pdfs/sanderson_armadillo_joss_2016.pdf)
 
