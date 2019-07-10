@@ -23,7 +23,7 @@ A list including the following terms will be returned:
 \item \code{theta} The estimated \eqn{\theta}, a vector with length \eqn{d + 1}, with the first one being the value of intercept.
 \item \code{tauCoef} The robustness parameter \eqn{\tau} determined by the tuning-free principle to estimate coefficients except for the intercept.
 \item \code{tauItcp} The robustness parameter \eqn{\tau} determined by the tuning-free principle to estimate the intercept.
-\item \code{iteCoef} The number of iterations in the iterative least square procedure.
+\item \code{iteCoef} The number of iterations in the iterative weighted least square procedure.
 \item \code{iteItcp} The number of iterations to estimate the intercept.
 }
 }
