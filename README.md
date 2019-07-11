@@ -114,7 +114,7 @@ Eddelbuettel, D. and Sanderson, C. (2014). RcppArmadillo: Accelerating R with hi
 
 Fan, J., Liu, H., Sun, Q. and Zhang, T. (2018). I-LAMM for sparse learning: Simultaneous control of algorithmic complexity and statistical error. Ann. Statist. 46 814–841. (https://projecteuclid.org/euclid.aos/1522742437)
 
-Ke, Y., Minsker, S., Ren, Z., Sun, Q. and Zhou, W.-X. (2019). User-Friendly Covariance Estimation for Heavy-Tailed Distributions. Statis. Sci. To appear. (https://arxiv.org/abs/1811.01520)
+Ke, Y., Minsker, S., Ren, Z., Sun, Q. and Zhou, W.-X. (2019). User-Friendly Covariance Estimation for Heavy-Tailed Distributions: A Survey and Recent Results. Statis. Sci. To appear. (https://arxiv.org/abs/1811.01520)
 
 Pan, X., Sun, Q. and Zhou, W.-X. (2019). Nonconvex regularized robust regression with oracle properties in polynomial time. Preprint. (https://arxiv.org/abs/1907.04027).
 

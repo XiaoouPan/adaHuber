@@ -130,7 +130,7 @@ double hMeanCov(const arma::vec& Z, const int n, const int d, const double epsil
 //' @return An adaptive Huber covariance matrix estimator with dimension \eqn{d} by \eqn{d}.
 //' @author Xiaoou Pan, Wen-Xin Zhou
 //' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2018). A New Principle for Tuning-Free Huber Regression. Preprint.
-//' @references Ke, Y., Minsker, S., Ren, Z., Sun, Q. and Zhou, W.-X. (2019). User-Friendly Covariance Estimation for Heavy-Tailed Distributions. Statis. Sci. To appear. 
+//' @references Ke, Y., Minsker, S., Ren, Z., Sun, Q. and Zhou, W.-X. (2019). User-Friendly Covariance Estimation for Heavy-Tailed Distributions: A Survey and Recent Results. Statis. Sci. To appear. 
 //' @examples
 //' n = 400
 //' d = 50
