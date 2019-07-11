@@ -4,7 +4,7 @@ Tuning-Free Huber Regression
 
 ## Description
 
-This package implements the Huber mean estimator, adaptive Huber regression and l1-regularized Huber regression (Huber-Lasso) estimators efficiently. For all these methods, the robustification parameter tau is calibrated by a tuning-free principle.
+This package implements the Huber mean estimator, Huber covariance matrix estimation, adaptive Huber regression and l1-regularized Huber regression (Huber-Lasso) estimators efficiently. For all these methods, the robustification parameter tau is calibrated by a tuning-free principle.
 
 Specifically, for Huber regression, assume the observed data vectors (Y, X) follow a linear model Y = beta_0 + X * beta + epsilon, where Y is an n-dimensional response vector, X is an n by d design matrix, and epsilon is an n-vector of noise variables whose distributions can be asymmetric and/or heavy-tailed. The package computes the standard Huber's M-estimator when d < n and the Huber-Lasso estimator when d > n. The vector of coefficients beta and the intercept term beta_0 are estimated successively via a two-step procedure. See the reference paper Wang et al. (2018) for more details of the two-step tuning-free framework.
 
@@ -40,9 +40,10 @@ The package `tfHuber` is implemented in `Rcpp` and `RcppArmadillo`, so the follo
 
 ## Functions
 
-There are three functions in this package: 
+There are four functions in this package: 
 
-* `huberMean`: Huber mean estimation. 
+* `huberMean`: Huber mean estimation.
+* `huberCov`: Huber covariance matrix estimation.
 * `huberReg`: Adaptive Huber regression.
 * `cvHuberLasso`: K-fold cross-validated Huber-Lasso regression.
 
@@ -56,6 +57,16 @@ n = 1000
 X = rlnorm(n, 0, 1.5) - exp(1.5^2 / 2)
 meanList = huberMean(X)
 hMean = meanList$mu
+```
+
+Then we present an example of Huber covariance matrix estimation. We generate data from t distribution with df = 3, which is heavy-tailed. We estimate its covariance matrix by the method proposed in Ke et al., 2019.
+
+```{r}
+library(tfHuber)
+n = 400
+d = 50
+X = matrix(rt(n * d, df = 3), n, d) / sqrt(3)
+hubCov = huberCov(X)
 ```
 
 Next, we present an example of adaptive Huber regression. Here we generate data from a linear model Y = X * theta + epsilon, where epsilon follows a log-normal distribution, and estimate the intercept and coefficients by tuning-free Huber regression.
@@ -102,6 +113,8 @@ Eddelbuettel, D. and Francois, R. (2011). Rcpp: Seamless R and C++ Integration. 
 Eddelbuettel, D. and Sanderson, C. (2014). RcppArmadillo: Accelerating R with high-performance C++ linear algebra. Comp. Stat. Dat. Ana. 71 1054-1063. (http://dirk.eddelbuettel.com/papers/RcppArmadillo.pdf)
 
 Fan, J., Liu, H., Sun, Q. and Zhang, T. (2018). I-LAMM for sparse learning: Simultaneous control of algorithmic complexity and statistical error. Ann. Statist. 46 814–841. (https://projecteuclid.org/euclid.aos/1522742437)
+
+Ke, Y., Minsker, S., Ren, Z., Sun, Q. and Zhou, W.-X. (2019). User-Friendly Covariance Estimation for Heavy-Tailed Distributions. Statis. Sci. To appear. (https://arxiv.org/abs/1811.01520)
 
 Pan, X., Sun, Q. and Zhou, W.-X. (2019). Nonconvex regularized robust regression with oracle properties in polynomial time. Preprint. (https://arxiv.org/abs/1907.04027).
 
