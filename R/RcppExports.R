@@ -9,6 +9,14 @@ rootf1 <- function(resSq, n, low, up, tol = 0.00001, maxIte = 500L) {
     .Call('_tfHuber_rootf1', PACKAGE = 'tfHuber', resSq, n, low, up, tol, maxIte)
 }
 
+f2 <- function(x, resSq, n, d) {
+    .Call('_tfHuber_f2', PACKAGE = 'tfHuber', x, resSq, n, d)
+}
+
+rootf2 <- function(resSq, n, d, low, up, tol = 0.00001, maxIte = 500L) {
+    .Call('_tfHuber_rootf2', PACKAGE = 'tfHuber', resSq, n, d, low, up, tol, maxIte)
+}
+
 #' The function calculates adaptive Huber mean estimator from a data sample, with \eqn{\tau} determined by a tuning-free principle.
 #'
 #' The observed data are \eqn{X}, which is an \eqn{n}-dimensional vector whose distribution can be asymmetrix and/or heavy-tailed. The function outputs a robust estimator for the mean of \eqn{X}.
@@ -33,6 +41,32 @@ rootf1 <- function(resSq, n, low, up, tol = 0.00001, maxIte = 500L) {
 #' @export
 huberMean <- function(X, epsilon = 0.00001, iteMax = 500L) {
     .Call('_tfHuber_huberMean', PACKAGE = 'tfHuber', X, epsilon, iteMax)
+}
+
+hMeanCov <- function(Z, n, d, epsilon = 0.00001, iteMax = 500L) {
+    .Call('_tfHuber_hMeanCov', PACKAGE = 'tfHuber', Z, n, d, epsilon, iteMax)
+}
+
+#' The function calculates adaptive Huber covariance estimator from a data sample, with \eqn{\tau} determined by a tuning-free principle.
+#'
+#' The observed data are \eqn{X}, which is an \eqn{n}-dimensional vector whose distribution can be asymmetrix and/or heavy-tailed. The function outputs a robust estimator for the covariance matrix of \eqn{X}.
+#'
+#' @title Tuning-free Huber covariance estimation
+#' @param X An \eqn{n}-dimensional data vector.
+#' @param epsilon The tolerance level in the iterative estimation procedure, iteration will stop when \eqn{|\mu_new - \mu_old| < \epsilon} or \eqn{|\tau_new - \tau_old| < \epsilon}. The defalut value is 1e-5.
+#' @param iteMax The maximal number of iteration in the iterative estimation procedure, iteration will stop when this number is reached. The defalut value is 500.
+#' @return An adaptive Huber covariance matrix estimator with dimension \eqn{d} by \eqn{d}.
+#' @author Xiaoou Pan, Wen-Xin Zhou
+#' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2018). A New Principle for Tuning-Free Huber Regression. Preprint.
+#' @references Ke, Y., Minsker, S., Ren, Z., Sun, Q. and Zhou, W.-X. (2019). User-Friendly Covariance Estimation for Heavy-Tailed Distributions. Statis. Sci. To appear. 
+#' @examples
+#' n = 400
+#' d = 50
+#' X = matrix(rt(n * d, df = 3), n, d) / sqrt(3)
+#' hubCov = huberCov(X)
+#' @export
+huberCov <- function(X, epsilon = 0.00001, iteMax = 500L) {
+    .Call('_tfHuber_huberCov', PACKAGE = 'tfHuber', X, epsilon, iteMax)
 }
 
 #' The function fits adaptive Huber regression via iterative weighted least square, with \eqn{\tau} determined by a tuning-free principle and the intercept term \eqn{\beta_0} estimated via a two-step procedure.

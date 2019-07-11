@@ -35,6 +35,37 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// f2
+double f2(const double x, const arma::vec& resSq, const int n, const int d);
+RcppExport SEXP _tfHuber_f2(SEXP xSEXP, SEXP resSqSEXP, SEXP nSEXP, SEXP dSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type resSq(resSqSEXP);
+    Rcpp::traits::input_parameter< const int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< const int >::type d(dSEXP);
+    rcpp_result_gen = Rcpp::wrap(f2(x, resSq, n, d));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rootf2
+double rootf2(const arma::vec& resSq, const int n, const int d, double low, double up, const double tol, const int maxIte);
+RcppExport SEXP _tfHuber_rootf2(SEXP resSqSEXP, SEXP nSEXP, SEXP dSEXP, SEXP lowSEXP, SEXP upSEXP, SEXP tolSEXP, SEXP maxIteSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type resSq(resSqSEXP);
+    Rcpp::traits::input_parameter< const int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< const int >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type low(lowSEXP);
+    Rcpp::traits::input_parameter< double >::type up(upSEXP);
+    Rcpp::traits::input_parameter< const double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< const int >::type maxIte(maxIteSEXP);
+    rcpp_result_gen = Rcpp::wrap(rootf2(resSq, n, d, low, up, tol, maxIte));
+    return rcpp_result_gen;
+END_RCPP
+}
 // huberMean
 Rcpp::List huberMean(const arma::vec& X, const double epsilon, const int iteMax);
 RcppExport SEXP _tfHuber_huberMean(SEXP XSEXP, SEXP epsilonSEXP, SEXP iteMaxSEXP) {
@@ -45,6 +76,34 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type epsilon(epsilonSEXP);
     Rcpp::traits::input_parameter< const int >::type iteMax(iteMaxSEXP);
     rcpp_result_gen = Rcpp::wrap(huberMean(X, epsilon, iteMax));
+    return rcpp_result_gen;
+END_RCPP
+}
+// hMeanCov
+double hMeanCov(const arma::vec& Z, const int n, const int d, const double epsilon, const int iteMax);
+RcppExport SEXP _tfHuber_hMeanCov(SEXP ZSEXP, SEXP nSEXP, SEXP dSEXP, SEXP epsilonSEXP, SEXP iteMaxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type Z(ZSEXP);
+    Rcpp::traits::input_parameter< const int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< const int >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const double >::type epsilon(epsilonSEXP);
+    Rcpp::traits::input_parameter< const int >::type iteMax(iteMaxSEXP);
+    rcpp_result_gen = Rcpp::wrap(hMeanCov(Z, n, d, epsilon, iteMax));
+    return rcpp_result_gen;
+END_RCPP
+}
+// huberCov
+arma::mat huberCov(const arma::mat& X, const double epsilon, const int iteMax);
+RcppExport SEXP _tfHuber_huberCov(SEXP XSEXP, SEXP epsilonSEXP, SEXP iteMaxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const double >::type epsilon(epsilonSEXP);
+    Rcpp::traits::input_parameter< const int >::type iteMax(iteMaxSEXP);
+    rcpp_result_gen = Rcpp::wrap(huberCov(X, epsilon, iteMax));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -278,7 +337,11 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_tfHuber_f1", (DL_FUNC) &_tfHuber_f1, 3},
     {"_tfHuber_rootf1", (DL_FUNC) &_tfHuber_rootf1, 6},
+    {"_tfHuber_f2", (DL_FUNC) &_tfHuber_f2, 4},
+    {"_tfHuber_rootf2", (DL_FUNC) &_tfHuber_rootf2, 7},
     {"_tfHuber_huberMean", (DL_FUNC) &_tfHuber_huberMean, 3},
+    {"_tfHuber_hMeanCov", (DL_FUNC) &_tfHuber_hMeanCov, 5},
+    {"_tfHuber_huberCov", (DL_FUNC) &_tfHuber_huberCov, 3},
     {"_tfHuber_huberReg", (DL_FUNC) &_tfHuber_huberReg, 5},
     {"_tfHuber_sgn", (DL_FUNC) &_tfHuber_sgn, 1},
     {"_tfHuber_softThresh", (DL_FUNC) &_tfHuber_softThresh, 2},

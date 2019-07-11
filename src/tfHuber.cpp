@@ -27,6 +27,32 @@ double rootf1(const arma::vec& resSq, const int n, double low, double up,
   return (low + up) / 2;
 }
 
+// [[Rcpp::export]]
+double f2(const double x, const arma::vec& resSq, const int n, const int d) {
+  int N = n * (n - 1) >> 1;
+  return arma::sum(arma::min(resSq, x * arma::ones(N))) / (N * x) - 
+    (2 * std::log(d) + std::log(n)) / n;
+}
+
+// [[Rcpp::export]]
+double rootf2(const arma::vec& resSq, const int n, const int d, double low, double up, 
+              const double tol = 0.00001, const int maxIte = 500) {
+  int ite = 0;
+  while (ite <= maxIte && up - low > tol) {
+    double mid = (up + low) / 2;
+    double val = f2(mid, resSq, n, d);
+    if (val == 0) {
+      return mid;
+    } else if (val < 0) {
+      up = mid;
+    } else {
+      low = mid;
+    }
+    ite++;
+  }
+  return (low + up) / 2;
+}
+
 //' The function calculates adaptive Huber mean estimator from a data sample, with \eqn{\tau} determined by a tuning-free principle.
 //'
 //' The observed data are \eqn{X}, which is an \eqn{n}-dimensional vector whose distribution can be asymmetrix and/or heavy-tailed. The function outputs a robust estimator for the mean of \eqn{X}.
@@ -69,6 +95,66 @@ Rcpp::List huberMean(const arma::vec& X, const double epsilon = 0.00001, const i
   }
   return Rcpp::List::create(Rcpp::Named("mu") = muNew, Rcpp::Named("tau") = tauNew, 
                             Rcpp::Named("iteration") = iteNum);
+}
+
+// [[Rcpp::export]]
+double hMeanCov(const arma::vec& Z, const int n, const int d, const double epsilon = 0.00001, 
+                    const int iteMax = 500) {
+  int N = Z.size();
+  double muOld = 0;
+  double muNew = arma::mean(Z);
+  double tauOld = 0;
+  double tauNew = arma::stddev(Z) * std::sqrt((long double)n / (2 * std::log(d) + std::log(n)));
+  int iteNum = 0;
+  while (((std::abs(muNew - muOld) > epsilon) || (std::abs(tauNew - tauOld) > epsilon)) && iteNum < iteMax) {
+    muOld = muNew;
+    tauOld = tauNew;
+    arma::vec res = Z - muOld * arma::ones(N);
+    arma::vec resSq = arma::square(res);
+    tauNew = std::sqrt((long double)rootf2(resSq, n, d, arma::min(resSq), arma::sum(resSq)));
+    arma::vec w = arma::min(tauNew * arma::ones(N) / arma::abs(res), arma::ones(N));
+    muNew = arma::as_scalar(Z.t() * w) / arma::sum(w);
+    iteNum++;
+  }
+  return muNew;
+}
+
+//' The function calculates adaptive Huber covariance estimator from a data sample, with \eqn{\tau} determined by a tuning-free principle.
+//'
+//' The observed data are \eqn{X}, which is an \eqn{n}-dimensional vector whose distribution can be asymmetrix and/or heavy-tailed. The function outputs a robust estimator for the covariance matrix of \eqn{X}.
+//'
+//' @title Tuning-free Huber covariance estimation
+//' @param X An \eqn{n}-dimensional data vector.
+//' @param epsilon The tolerance level in the iterative estimation procedure, iteration will stop when \eqn{|\mu_new - \mu_old| < \epsilon} or \eqn{|\tau_new - \tau_old| < \epsilon}. The defalut value is 1e-5.
+//' @param iteMax The maximal number of iteration in the iterative estimation procedure, iteration will stop when this number is reached. The defalut value is 500.
+//' @return An adaptive Huber covariance matrix estimator with dimension \eqn{d} by \eqn{d}.
+//' @author Xiaoou Pan, Wen-Xin Zhou
+//' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2018). A New Principle for Tuning-Free Huber Regression. Preprint.
+//' @references Ke, Y., Minsker, S., Ren, Z., Sun, Q. and Zhou, W.-X. (2019). User-Friendly Covariance Estimation for Heavy-Tailed Distributions. Statis. Sci. To appear. 
+//' @examples
+//' n = 400
+//' d = 50
+//' X = matrix(rt(n * d, df = 3), n, d) / sqrt(3)
+//' hubCov = huberCov(X)
+//' @export
+// [[Rcpp::export]]
+arma::mat huberCov(const arma::mat& X, const double epsilon = 0.00001, const int iteMax = 500) {
+  int n = X.n_rows;
+  int d = X.n_cols;
+  int N = n * (n - 1) >> 1;
+  arma::mat Y(N, d);
+  for (int i = 0, k = 0; i < n - 1; i++) {
+    for (int j = i + 1; j < n; j++) {
+      Y.row(k++) = X.row(i) - X.row(j);
+    }
+  }
+  arma::mat rst(d, d);
+  for (int i = 0; i < d; i++) {
+    for (int j = i; j < d; j++) {
+      rst(i, j) = rst(j, i) = hMeanCov(Y.col(i) % Y.col(j) / 2, n, d, epsilon, iteMax);
+    }
+  }
+  return rst;
 }
 
 //' The function fits adaptive Huber regression via iterative weighted least square, with \eqn{\tau} determined by a tuning-free principle and the intercept term \eqn{\beta_0} estimated via a two-step procedure.
