@@ -23,7 +23,7 @@ The function calculates adaptive Huber covariance estimator from a data sample, 
 The observed data are \eqn{X}, which is an \eqn{n}-dimensional vector whose distribution can be asymmetrix and/or heavy-tailed. The function outputs a robust estimator for the covariance matrix of \eqn{X}.
 }
 \examples{
-n = 400
+n = 100
 d = 50
 X = matrix(rt(n * d, df = 3), n, d) / sqrt(3)
 hubCov = huberCov(X)

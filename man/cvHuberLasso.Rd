@@ -4,12 +4,12 @@
 \alias{cvHuberLasso}
 \title{Tuning-free Huber-Lasso regression}
 \usage{
-cvHuberLasso(X, Y, lSeq = NULL, nlambda = 30L, constTau = 1.345,
+cvHuberLasso(X, Y, lSeq = NULL, nlambda = 30L, constTau = 2.5,
   phi0 = 0.001, gamma = 1.5, epsilon_c = 0.001, iteMax = 500L,
   nfolds = 3L)
 }
 \arguments{
-\item{X}{An \eqn{n} by \eqn{d} design matrix with each row being a sample and each column being a variable, either low-dimensional data (\eqn{d \le n}) or high-dimensional data (\eqn{d > n}) are allowed..}
+\item{X}{An \eqn{n} by \eqn{d} design matrix with each row being a sample and each column being a variable, either low-dimensional data (\eqn{d \le n}) or high-dimensional data (\eqn{d > n}) are allowed.}
 
 \item{Y}{A continuous response vector with length \eqn{n}.}
 
@@ -48,8 +48,8 @@ The function fits Huber-Lasso regression via I-LAMM algorithm, with \eqn{\tau} d
 The observed data are \eqn{(Y, X)}, where \eqn{Y} is an \eqn{n}-dimensional response vector and \eqn{X} is an \eqn{n} by \eqn{d} design matrix. We assume that \eqn{Y} depends on \eqn{X} through a linear model \eqn{Y = X \beta + \epsilon}, where \eqn{\beta} is a sparse vector and \eqn{\epsilon} is an \eqn{n}-dimensional noise vector whose distribution can be asymmetrix and/or heavy-tailed. All the arguments except for \eqn{X} and \eqn{Y} have default settings.
 }
 \examples{
-n = 200
-d = 500
+n = 100
+d = 200
 s = 5
 thetaStar = c(rep(3, s + 1), rep(0, d - s))
 X = matrix(rnorm(n * d), n, d)
