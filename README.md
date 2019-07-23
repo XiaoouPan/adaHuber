@@ -6,7 +6,7 @@ Tuning-Free Huber Estimation and Regression
 
 This package implements the Huber mean estimator, Huber covariance matrix estimation, adaptive Huber regression and l<sub>1</sub>-regularized Huber regression (Huber-Lasso) estimators efficiently. For all these methods, the robustification parameter tau is calibrated by a tuning-free principle.
 
-Specifically, for Huber regression, assume the observed data vectors (Y, X) follow a linear model Y = &beta;<sub>0</sub> + X &beta; + &epsilon;, where Y is an n-dimensional response vector, X is an n by d design matrix, and &epsilon; is an n-vector of noise variables whose distributions can be asymmetric and/or heavy-tailed. The package computes the standard Huber's M-estimator when d < n and the Huber-Lasso estimator when d > n. The vector of coefficients beta and the intercept term &beta;<sub>0</sub> are estimated successively via a two-step procedure. See [Wang et al., 2018](https://www.math.ucsd.edu/~wez243/Tuning_Free.pdf) for more details of the two-step tuning-free framework.
+Specifically, for Huber regression, assume the observed data vectors (Y, X) follow a linear model Y = &theta;<sub>0</sub> + X &theta; + &epsilon;, where Y is an n-dimensional response vector, X is an n by d design matrix, and &epsilon; is an n-vector of noise variables whose distributions can be asymmetric and/or heavy-tailed. The package computes the standard Huber's M-estimator when d < n and the Huber-Lasso estimator when d > n. The vector of coefficients beta and the intercept term &beta;<sub>0</sub> are estimated successively via a two-step procedure. See [Wang et al., 2018](https://www.math.ucsd.edu/~wez243/Tuning_Free.pdf) for more details of the two-step tuning-free framework.
 
 ## Installation
 
@@ -119,7 +119,7 @@ Pan, X., Sun, Q. and Zhou, W.-X. (2019). Nonconvex regularized robust regression
 
 Sanderson, C. and Curtin, R. (2016). Armadillo: a template-based C++ library for linear algebra. J. Open. Src. Softw. 1(2) 26. [Paper](http://conradsanderson.id.au/pdfs/sanderson_armadillo_joss_2016.pdf)
 
-Sun, Q., Zhou, W.-X. and Fan, J. (2018). Adaptive Huber regression. J. Amer. Stat. Assoc. 0 1-12. [Paper](https://www.tandfonline.com/doi/abs/10.1080/01621459.2018.1543124)
+Sun, Q., Zhou, W.-X. and Fan, J. (2019). Adaptive Huber regression. J. Amer. Stat. Assoc. 0 1-12. [Paper](https://www.tandfonline.com/doi/abs/10.1080/01621459.2018.1543124)
 
 Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. J. R. Stat. Soc. Ser. B. Stat. Methodol. 58 267–288. [Paper](https://www.jstor.org/stable/2346178?seq=1#metadata_info_tab_contents)
 
