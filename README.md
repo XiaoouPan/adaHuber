@@ -44,7 +44,7 @@ There are four functions in this package:
 * `huberMean`: Huber mean estimation.
 * `huberCov`: Huber covariance matrix estimation.
 * `huberReg`: Adaptive Huber regression.
-* `cvHuberLasso`: K-fold cross-validated Huber-Lasso regression.
+* `cvHuberLasso`: *K*-fold cross-validated Huber-Lasso regression.
 
 ## Examples 
 
@@ -58,7 +58,7 @@ meanList = huberMean(X)
 hMean = meanList$mu
 ```
 
-Then we present an example of Huber covariance matrix estimation. We generate data from t distribution with df = 3, which is heavy-tailed. We estimate its covariance matrix by the method proposed in [Ke et al., 2019](https://arxiv.org/abs/1811.01520).
+Then we present an example of Huber covariance matrix estimation. We generate data from *t* distribution with df = 3, which is heavy-tailed. We estimate its covariance matrix by the method proposed in [Ke et al., 2019](https://arxiv.org/abs/1811.01520).
 
 ```r
 library(tfHuber)
@@ -68,7 +68,7 @@ X = matrix(rt(n * d, df = 3), n, d) / sqrt(3)
 hubCov = huberCov(X)
 ```
 
-Next, we present an example of adaptive Huber regression. Here we generate data from a linear model Y = X &theta; + &epsilon;, where &epsilon; follows a log-normal distribution, and estimate the intercept and coefficients by tuning-free Huber regression.
+Next, we present an example of adaptive Huber regression. Here we generate data from a linear model *Y = X &theta; + &epsilon;*, where *&epsilon;* follows a log-normal distribution, and estimate the intercept and coefficients by tuning-free Huber regression.
 
 ```r
 library(tfHuber)
@@ -82,7 +82,7 @@ listHuber = huberReg(X, Y)
 thetaHuber = listHuber$theta
 ```
 
-Finally, we illustrate the use of l<sub>1</sub>-regularized Huber regression. Again, we generate data from a linear model Y = X &theta; + &epsilon;, where &theta; is a high-dimensional vector, and &epsilon; is from a log-normal distribution. We estimate the intercept and coefficients by Huber-Lasso regression, where the regularization parameter &lambda; is calibrated by K-fold cross-validation, and the robustification parameter &tau; is chosen by a tuning-free procedure.
+Finally, we illustrate the use of *l<sub>1</sub>*-regularized Huber regression. Again, we generate data from a linear model *Y = X &theta; + &epsilon;*, where *&theta;* is a high-dimensional vector, and *&epsilon;* is from a log-normal distribution. We estimate the intercept and coefficients by Huber-Lasso regression, where the regularization parameter *&lambda;* is calibrated by *K*-fold cross-validation, and the robustification parameter *&tau;* is chosen by a tuning-free procedure.
 
 ```r
 library(tfHuber)
