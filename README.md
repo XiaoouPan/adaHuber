@@ -19,23 +19,21 @@ devtools::install_github("XiaoouPan/tfHuber")
 library(tfHuber)
 ```
 
-## Getting help
-
-Help on the functions can be accessed by typing `?`, followed by function name at the R command prompt. 
-
-For example, `?huberReg` will present a detailed documentation with inputs, outputs and examples of the function `huberReg`.
-
 ## Common error messages
 
-The package `tfHuber` is implemented in `Rcpp` and `RcppArmadillo`, so the following error messages might appear when you first install it (we'll keep updating common error messages with feedback from users):
+First of all, to avoid most unexpected error messages, it is **strongly** recommended to update `R` to version >= 3.6.1.
 
-* Error: "...could not find build tools necessary to build tfHuber": For Windows you need Rtools, for Mac OS X you need to install Command Line Tools for XCode. See [this link](https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites) for details. 
+Besides, since the library `tfHuber` is coded in `Rcpp` and `RcppArmadillo`, when you first install it, the following two build tools are required:
 
-* Error: "library not found for -lgfortran/-lquadmath": It means your gfortran binaries are out of date. This is a common environment specific issue. 
+1. Rtools for Windows OS or XCode Command Line Tools for Mac OS. See [this link](https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites) for details.
 
-    1. In R 3.0.0 - R 3.3.0: Upgrading to R 3.4 is strongly recommended. Then go to the next step. Alternatively, you can try the instructions [here](http://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/).
+2. gfortran binaries: see [here](https://gcc.gnu.org/wiki/GFortranBinaries#MacOS) for instructions.
 
-    2. For >= R 3.4.* : download the installer from [here](https://gcc.gnu.org/wiki/GFortranBinaries#MacOS). Then run the installer.
+`tfHuber` should be working well after these steps. Some common error messages along with their solutions are collected below, and we'll keep updating them based on users' feedback:
+
+* Error: "...could not find build tools necessary to build FarmTest": Please see step 1 above.
+
+* Error: "library not found for -lgfortran/..": Please see step 2 above.
 
 ## Functions
 
@@ -45,6 +43,12 @@ There are four functions in this package:
 * `huberCov`: Huber covariance matrix estimation.
 * `huberReg`: Adaptive Huber regression.
 * `cvHuberLasso`: *K*-fold cross-validated Huber-Lasso regression.
+
+## Getting help
+
+Help on the functions can be accessed by typing `?`, followed by function name at the R command prompt. 
+
+For example, `?huberReg` will present a detailed documentation with inputs, outputs and examples of the function `huberReg`.
 
 ## Examples 
 
