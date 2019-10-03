@@ -49,6 +49,3 @@ Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2018). A New Principle for Tuning
 \seealso{
 \code{\link{cvHuberLasso}}
 }
-\author{
-Xiaoou Pan, Wen-Xin Zhou
-}

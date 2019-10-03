@@ -36,6 +36,3 @@ hMean = meanList$mu
 \references{
 Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2018). A New Principle for Tuning-Free Huber Regression. Preprint.
 }
-\author{
-Xiaoou Pan, Wen-Xin Zhou
-}

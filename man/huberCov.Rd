@@ -33,6 +33,3 @@ Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2018). A New Principle for Tuning
 
 Ke, Y., Minsker, S., Ren, Z., Sun, Q. and Zhou, W.-X. (2019). User-Friendly Covariance Estimation for Heavy-Tailed Distributions: A Survey and Recent Results. Statis. Sci. To appear.
 }
-\author{
-Xiaoou Pan, Wen-Xin Zhou
-}

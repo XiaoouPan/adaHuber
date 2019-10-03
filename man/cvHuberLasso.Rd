@@ -66,6 +66,3 @@ Fan, J., Liu, H., Sun, Q. and Zhang, T. (2018). I-LAMM for sparse learning: Simu
 \seealso{
 \code{\link{huberReg}}
 }
-\author{
-Xiaoou Pan, Wen-Xin Zhou
-}

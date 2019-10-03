@@ -11,7 +11,7 @@ Description: A C++ implementation of Huber mean estimation, Huber regression and
              and Huber-Lasso estimators are computed by the I-LAMM algorithm.
 License: GPL-2
 Encoding: UTF-8
-Imports: Rcpp (>= 1.0.0), RcppArmadillo
+Imports: Rcpp
 LinkingTo: Rcpp, RcppArmadillo
 Depends: RcppArmadillo
 RoxygenNote: 6.1.1

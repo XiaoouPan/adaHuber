@@ -51,11 +51,9 @@ double rootf2(const arma::vec& resSq, const int n, const int d, double low, doub
   return (low + up) / 2;
 }
 
-//' The function calculates adaptive Huber mean estimator from a data sample, with \eqn{\tau} determined by a tuning-free principle.
-//'
-//' The observed data are \eqn{X}, which is an \eqn{n}-dimensional vector whose distribution can be asymmetrix and/or heavy-tailed. The function outputs a robust estimator for the mean of \eqn{X}.
-//'
 //' @title Tuning-free Huber mean estimation
+//' @description The function calculates adaptive Huber mean estimator from a data sample, with \eqn{\tau} determined by a tuning-free principle.
+//' @details The observed data are \eqn{X}, which is an \eqn{n}-dimensional vector whose distribution can be asymmetrix and/or heavy-tailed. The function outputs a robust estimator for the mean of \eqn{X}.
 //' @param X An \eqn{n}-dimensional data vector.
 //' @param epsilon The tolerance level in the iterative estimation procedure, iteration will stop when \eqn{|\mu_new - \mu_old| < \epsilon} or \eqn{|\tau_new - \tau_old| < \epsilon}. The defalut value is 1e-5.
 //' @param iteMax The maximal number of iteration in the iterative estimation procedure, iteration will stop when this number is reached. The defalut value is 500.
@@ -65,7 +63,6 @@ double rootf2(const arma::vec& resSq, const int n, const int d, double low, doub
 //' \item \code{tau} The robustness parameter determined by the tuning-free principle.
 //' \item \code{iteration} The number of iterations in the estimation procedure.
 //' }
-//' @author Xiaoou Pan, Wen-Xin Zhou
 //' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2018). A New Principle for Tuning-Free Huber Regression. Preprint.
 //' @examples
 //' n = 1000
@@ -118,16 +115,13 @@ double hMeanCov(const arma::vec& Z, const int n, const int d, const double epsil
   return muNew;
 }
 
-//' The function calculates adaptive Huber covariance estimator from a data sample, with \eqn{\tau} determined by a tuning-free principle.
-//'
-//' The observed data are \eqn{X}, which is an \eqn{n}-dimensional vector whose distribution can be asymmetrix and/or heavy-tailed. The function outputs a robust estimator for the covariance matrix of \eqn{X}.
-//'
 //' @title Tuning-free Huber covariance estimation
+//' @description The function calculates adaptive Huber covariance estimator from a data sample, with \eqn{\tau} determined by a tuning-free principle.
+//' @details The observed data are \eqn{X}, which is an \eqn{n}-dimensional vector whose distribution can be asymmetrix and/or heavy-tailed. The function outputs a robust estimator for the covariance matrix of \eqn{X}.
 //' @param X An \eqn{n}-dimensional data vector.
 //' @param epsilon The tolerance level in the iterative estimation procedure, iteration will stop when \eqn{|\mu_new - \mu_old| < \epsilon} or \eqn{|\tau_new - \tau_old| < \epsilon}. The defalut value is 1e-5.
 //' @param iteMax The maximal number of iteration in the iterative estimation procedure, iteration will stop when this number is reached. The defalut value is 500.
 //' @return An adaptive Huber covariance matrix estimator with dimension \eqn{d} by \eqn{d}.
-//' @author Xiaoou Pan, Wen-Xin Zhou
 //' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2018). A New Principle for Tuning-Free Huber Regression. Preprint.
 //' @references Ke, Y., Minsker, S., Ren, Z., Sun, Q. and Zhou, W.-X. (2019). User-Friendly Covariance Estimation for Heavy-Tailed Distributions: A Survey and Recent Results. Statis. Sci. To appear. 
 //' @examples
@@ -156,11 +150,9 @@ arma::mat huberCov(const arma::mat& X, const double epsilon = 0.00001, const int
   return rst;
 }
 
-//' The function fits adaptive Huber regression via iterative weighted least square, with \eqn{\tau} determined by a tuning-free principle and the intercept term \eqn{\beta_0} estimated via a two-step procedure.
-//'
-//' The observed data are \eqn{(Y, X)}, where \eqn{Y} is an \eqn{n}-dimensional response vector and \eqn{X} is an \eqn{n} by \eqn{d} design matrix with \eqn{d < n}. We assume that \eqn{Y} depends on \eqn{X} through a linear model \eqn{Y = X \beta + \epsilon}, where \eqn{\epsilon} is an \eqn{n}-dimensional noise vector whose distribution can be asymmetrix and/or heavy-tailed. All the arguments except for \eqn{X} and \eqn{Y} have default settings.
-//'
 //' @title Tuning-free Huber regression
+//' @description The function fits adaptive Huber regression via iterative weighted least square, with \eqn{\tau} determined by a tuning-free principle and the intercept term \eqn{\beta_0} estimated via a two-step procedure.
+//' @details The observed data are \eqn{(Y, X)}, where \eqn{Y} is an \eqn{n}-dimensional response vector and \eqn{X} is an \eqn{n} by \eqn{d} design matrix with \eqn{d < n}. We assume that \eqn{Y} depends on \eqn{X} through a linear model \eqn{Y = X \beta + \epsilon}, where \eqn{\epsilon} is an \eqn{n}-dimensional noise vector whose distribution can be asymmetrix and/or heavy-tailed. All the arguments except for \eqn{X} and \eqn{Y} have default settings.
 //' @param X An \eqn{n} by \eqn{d} design matrix with each row being a sample and each column being a variable and \eqn{d < n}.
 //' @param Y A continuous response vector with length \eqn{n}.
 //' @param epsilon The tolerance level for the iterative weighted least square, the iteration will stop when \eqn{||\theta_new - \theta_old||_inf < \epsilon} or \eqn{|\tau_new - \tau_old| < \epsilon}. The defalut value is 1e-5.
@@ -174,7 +166,6 @@ arma::mat huberCov(const arma::mat& X, const double epsilon = 0.00001, const int
 //' \item \code{iteCoef} The number of iterations in the iterative weighted least square procedure.
 //' \item \code{iteItcp} The number of iterations to estimate the intercept.
 //' }
-//' @author Xiaoou Pan, Wen-Xin Zhou
 //' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2018). A New Principle for Tuning-Free Huber Regression. Preprint.
 //' @seealso \code{\link{cvHuberLasso}}
 //' @examples
@@ -405,11 +396,9 @@ double pairPred(const arma::mat& X, const arma::vec& Y, const arma::vec& beta) {
   return arma::sum(arma::square(pairY - predY));
 }
 
-//' The function fits Huber-Lasso regression via I-LAMM algorithm, with \eqn{\tau} determined by a tuning-free principle, \eqn{\lambda} calibrated by k-folds cross-validation, and the intercept term \eqn{\beta_0} estimated via a two-step procedure.
-//'
-//' The observed data are \eqn{(Y, X)}, where \eqn{Y} is an \eqn{n}-dimensional response vector and \eqn{X} is an \eqn{n} by \eqn{d} design matrix. We assume that \eqn{Y} depends on \eqn{X} through a linear model \eqn{Y = X \beta + \epsilon}, where \eqn{\beta} is a sparse vector and \eqn{\epsilon} is an \eqn{n}-dimensional noise vector whose distribution can be asymmetrix and/or heavy-tailed. All the arguments except for \eqn{X} and \eqn{Y} have default settings.
-//'
 //' @title Tuning-free Huber-Lasso regression
+//' @description The function fits Huber-Lasso regression via I-LAMM algorithm, with \eqn{\tau} determined by a tuning-free principle, \eqn{\lambda} calibrated by k-folds cross-validation, and the intercept term \eqn{\beta_0} estimated via a two-step procedure.
+//' @details The observed data are \eqn{(Y, X)}, where \eqn{Y} is an \eqn{n}-dimensional response vector and \eqn{X} is an \eqn{n} by \eqn{d} design matrix. We assume that \eqn{Y} depends on \eqn{X} through a linear model \eqn{Y = X \beta + \epsilon}, where \eqn{\beta} is a sparse vector and \eqn{\epsilon} is an \eqn{n}-dimensional noise vector whose distribution can be asymmetrix and/or heavy-tailed. All the arguments except for \eqn{X} and \eqn{Y} have default settings.
 //' @param X An \eqn{n} by \eqn{d} design matrix with each row being a sample and each column being a variable, either low-dimensional data (\eqn{d \le n}) or high-dimensional data (\eqn{d > n}) are allowed.
 //' @param Y A continuous response vector with length \eqn{n}.
 //' @param lSeq Sequence of tuning parameter of regularized regression \eqn{\lambda}, every element should be positive. If it's not specified, the default sequence is generated in this way: define \eqn{\lambda_max = max(|Y^T X|) / n}, and \eqn{\lambda_min = 0.01 * \lambda_max}, then \code{lseq} is a sequence from \eqn{\lambda_max} to \eqn{\lambda_min} that decreases uniformly on log scale.
@@ -430,7 +419,6 @@ double pairPred(const arma::mat& X, const arma::vec& Y, const arma::vec& beta) {
 //' \item \code{iteCoef} The number of iterations in I-LAMM algirithm to estimate coefficients.
 //' \item \code{iteItcp} The number of iterations to estimate the intercept.
 //' }
-//' @author Xiaoou Pan, Wen-Xin Zhou
 //' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2018). A New Principle for Tuning-Free Huber Regression. Preprint.
 //' @references Fan, J., Liu, H., Sun, Q. and Zhang, T. (2018). I-LAMM for sparse learning: Simultaneous control of algorithmic complexity and statistical error. Ann. Statist. 46 814–841.
 //' @seealso \code{\link{huberReg}}
