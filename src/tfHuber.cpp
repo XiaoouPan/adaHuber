@@ -4,7 +4,7 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 
 double f1(const double x, const arma::vec& resSq, const int n) {
-  return arma::sum(arma::min(resSq, x * arma::ones(n))) / (n * x) - std::log(n) / n;
+  return arma::accu(arma::min(resSq, x * arma::ones(n))) / (n * x) - std::log(n) / n;
 }
 
 double rootf1(const arma::vec& resSq, const int n, double low, double up, const double tol = 0.00001, 
@@ -28,7 +28,7 @@ double rootf1(const arma::vec& resSq, const int n, double low, double up, const 
 
 double f2(const double x, const arma::vec& resSq, const int n, const int d) {
   int N = n * (n - 1) >> 1;
-  return arma::sum(arma::min(resSq, x * arma::ones(N))) / (N * x) - (2 * std::log(d) + std::log(n)) / n;
+  return arma::accu(arma::min(resSq, x * arma::ones(N))) / (N * x) - (2 * std::log(d) + std::log(n)) / n;
 }
 
 double rootf2(const arma::vec& resSq, const int n, const int d, double low, double up, 
@@ -83,9 +83,9 @@ Rcpp::List huberMean(const arma::vec& X, const double epsilon = 0.00001, const i
     tauOld = tauNew;
     res = X - muOld * arma::ones(n);
     resSq = arma::square(res);
-    tauNew = std::sqrt((long double)rootf1(resSq, n, arma::min(resSq), arma::sum(resSq)));
+    tauNew = std::sqrt((long double)rootf1(resSq, n, arma::min(resSq), arma::accu(resSq)));
     w = arma::min(tauNew / arma::abs(res), arma::ones(n));
-    muNew = arma::as_scalar(X.t() * w) / arma::sum(w);
+    muNew = arma::as_scalar(X.t() * w) / arma::accu(w);
     iteNum++;
   }
   return Rcpp::List::create(Rcpp::Named("mu") = muNew, Rcpp::Named("tau") = tauNew, 
@@ -105,9 +105,9 @@ double hMeanCov(const arma::vec& Z, const int n, const int d, const int N,
     tauOld = tauNew;
     res = Z - muOld * arma::ones(N);
     resSq = arma::square(res);
-    tauNew = std::sqrt((long double)rootf2(resSq, n, d, arma::min(resSq), arma::sum(resSq)));
+    tauNew = std::sqrt((long double)rootf2(resSq, n, d, arma::min(resSq), arma::accu(resSq)));
     w = arma::min(tauNew / arma::abs(res), arma::ones(N));
-    muNew = arma::as_scalar(Z.t() * w) / arma::sum(w);
+    muNew = arma::as_scalar(Z.t() * w) / arma::accu(w);
     iteNum++;
   }
   return muNew;
@@ -197,7 +197,7 @@ Rcpp::List huberReg(const arma::mat& X, const arma::vec& Y, const double epsilon
   arma::vec thetaOld = arma::zeros(d + 1);
   arma::vec thetaNew = arma::solve(Z.t() * Z, Z.t() * Y);
   double tauOld = 0;
-  double tauNew = std::sqrt((long double)arma::sum(arma::square(Y - Z * thetaNew)) / (n - d)) *
+  double tauNew = std::sqrt((long double)arma::accu(arma::square(Y - Z * thetaNew)) / (n - d)) *
     std::sqrt((long double)n / std::log((long double)(d + std::log(n * d))));
   double mad;
   int iteNum = 0;
@@ -401,7 +401,7 @@ double pairPred(const arma::mat& X, const arma::vec& Y, const arma::vec& beta) {
     }
   }
   arma::vec predY = pairX * beta;
-  return arma::sum(arma::square(pairY - predY));
+  return arma::accu(arma::square(pairY - predY));
 }
 
 //' @title Tuning-free Huber-Lasso regression
