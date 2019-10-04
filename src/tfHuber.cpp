@@ -7,8 +7,8 @@ double f1(const double x, const arma::vec& resSq, const int n) {
   return arma::sum(arma::min(resSq, x * arma::ones(n))) / (n * x) - std::log(n) / n;
 }
 
-double rootf1(const arma::vec& resSq, const int n, double low, double up, 
-              const double tol = 0.00001, const int maxIte = 500) {
+double rootf1(const arma::vec& resSq, const int n, double low, double up, const double tol = 0.00001, 
+              const int maxIte = 500) {
   int ite = 0;
   double mid, val;
   while (ite <= maxIte && up - low > tol) {
@@ -28,8 +28,7 @@ double rootf1(const arma::vec& resSq, const int n, double low, double up,
 
 double f2(const double x, const arma::vec& resSq, const int n, const int d) {
   int N = n * (n - 1) >> 1;
-  return arma::sum(arma::min(resSq, x * arma::ones(N))) / (N * x) - 
-    (2 * std::log(d) + std::log(n)) / n;
+  return arma::sum(arma::min(resSq, x * arma::ones(N))) / (N * x) - (2 * std::log(d) + std::log(n)) / n;
 }
 
 double rootf2(const arma::vec& resSq, const int n, const int d, double low, double up, 
@@ -85,7 +84,7 @@ Rcpp::List huberMean(const arma::vec& X, const double epsilon = 0.00001, const i
     res = X - muOld * arma::ones(n);
     resSq = arma::square(res);
     tauNew = std::sqrt((long double)rootf1(resSq, n, arma::min(resSq), arma::sum(resSq)));
-    w = arma::min(tauNew * arma::ones(n) / arma::abs(res), arma::ones(n));
+    w = arma::min(tauNew / arma::abs(res), arma::ones(n));
     muNew = arma::as_scalar(X.t() * w) / arma::sum(w);
     iteNum++;
   }
@@ -93,9 +92,8 @@ Rcpp::List huberMean(const arma::vec& X, const double epsilon = 0.00001, const i
                             Rcpp::Named("iteration") = iteNum);
 }
 
-double hMeanCov(const arma::vec& Z, const int n, const int d, const double epsilon = 0.00001, 
-                    const int iteMax = 500) {
-  int N = Z.size();
+double hMeanCov(const arma::vec& Z, const int n, const int d, const int N, 
+                const double epsilon = 0.00001, const int iteMax = 500) {
   double muOld = 0;
   double muNew = arma::mean(Z);
   double tauOld = 0;
@@ -108,7 +106,7 @@ double hMeanCov(const arma::vec& Z, const int n, const int d, const double epsil
     res = Z - muOld * arma::ones(N);
     resSq = arma::square(res);
     tauNew = std::sqrt((long double)rootf2(resSq, n, d, arma::min(resSq), arma::sum(resSq)));
-    w = arma::min(tauNew * arma::ones(N) / arma::abs(res), arma::ones(N));
+    w = arma::min(tauNew / arma::abs(res), arma::ones(N));
     muNew = arma::as_scalar(Z.t() * w) / arma::sum(w);
     iteNum++;
   }
@@ -133,21 +131,31 @@ double hMeanCov(const arma::vec& Z, const int n, const int d, const double epsil
 // [[Rcpp::export]]
 arma::mat huberCov(const arma::mat& X, const double epsilon = 0.00001, const int iteMax = 500) {
   int n = X.n_rows;
-  int d = X.n_cols;
+  int p = X.n_cols;
+  arma::vec mu(p);
+  arma::mat sigmaHat(p, p);
+  for (int j = 0; j < p; j++) {
+    mu(j) = huberMean(X.col(j))["mu"];
+    double theta = huberMean(arma::square(X.col(j)))["mu"];
+    double temp = mu(j) * mu(j);
+    if (theta > temp) {
+      theta -= temp;
+    }
+    sigmaHat(j, j) = theta;
+  }
   int N = n * (n - 1) >> 1;
-  arma::mat Y(N, d);
+  arma::mat Y(N, p);
   for (int i = 0, k = 0; i < n - 1; i++) {
     for (int j = i + 1; j < n; j++) {
       Y.row(k++) = X.row(i) - X.row(j);
     }
   }
-  arma::mat rst(d, d);
-  for (int i = 0; i < d; i++) {
-    for (int j = i; j < d; j++) {
-      rst(i, j) = rst(j, i) = hMeanCov(Y.col(i) % Y.col(j) / 2, n, d, epsilon, iteMax);
+  for (int i = 0; i < p - 1; i++) {
+    for (int j = i + 1; j < p; j++) {
+      sigmaHat(i, j) = sigmaHat(j, i) = hMeanCov(Y.col(i) % Y.col(j) / 2, n, p, N);
     }
   }
-  return rst;
+  return sigmaHat;
 }
 
 //' @title Tuning-free Huber regression
