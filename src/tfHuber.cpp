@@ -1,6 +1,7 @@
 # include <RcppArmadillo.h>
 # include <cmath>
 # include <string>
+# include <iostream>
 // [[Rcpp::depends(RcppArmadillo)]]
 
 double f1(const double x, const arma::vec& resSq, const int n) {
