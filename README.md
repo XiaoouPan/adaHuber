@@ -1,6 +1,6 @@
 # tfHuber
 
-Tuning-Free Huber Estimation and Regression
+**T**uning-**F**ree **Huber** Estimation and Regression
 
 ## Description
 
