@@ -4,7 +4,7 @@ Title: Tuning-Free Huber Regression
 Version: 1.0
 Date: 2019-04-09
 Author: Xiaoou Pan, Wen-Xin Zhou
-Maintainer: Xiaoou Pan <xip024@ucsd.edu>, Wen-Xin Zhou <wez243@ucsd.edu>
+Maintainer: Xiaoou Pan <xip024@ucsd.edu>
 Description: A C++ implementation of Huber mean estimation, Huber regression and l1-regularized Huber regression (Huber-Lasso).
              Among all the methods, the robustification parameter tau is chosen by a tuning-free principle.
              In low dimensions, Huber regression estimators are calculated via iteratively weighted least squares, 
