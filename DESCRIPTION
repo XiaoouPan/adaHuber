@@ -5,9 +5,7 @@ Version: 1.1
 Date: 2020-08-15
 Authors@R: c(person("Xiaoou", "Pan", email = "xip024@ucsd.edu", role = c("aut", "cre")), 
              person("Wen-Xin", "Zhou", email = "wez243@ucsd.edu", role = "aut"))
-Description: A C++ implementation of Huber mean estimation, Huber regression and l1-regularized Huber regression (Huber-Lasso).
-             Among all the methods, the robustification parameter tau is chosen by a tuning-free principle.
-             In low dimensions, Huber regression estimators are calculated via gradient descent, and Huber-Lasso estimators are computed by the I-LAMM algorithm.
+Description: A C++ implementation of Huber mean estimation, Huber regression and l1-regularized Huber regression (Huber-Lasso). Among all the methods, the robustification parameter tau is chosen by a tuning-free principle. In low dimensions, Huber regression estimators are calculated via gradient descent, and Huber-Lasso estimators are computed by the I-LAMM algorithm.
 Depends: R (>= 3.5.0)
 License: GPL-2
 Encoding: UTF-8
