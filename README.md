@@ -8,6 +8,10 @@ This package implements the Huber mean estimator, Huber covariance matrix estima
 
 Specifically, for Huber regression, assume the observed data vectors (*Y*, *X*) follow a linear model *Y = &theta;<sub>0</sub> + X &theta; + &epsilon;*, where *Y* is an *n*-dimensional response vector, *X* is an *n* &times; *d* design matrix, and *&epsilon;* is an *n*-vector of noise variables whose distributions can be asymmetric and/or heavy-tailed. The package computes the standard Huber's *M*-estimator when *d < n* and the Huber-Lasso estimator when *d > n*. The vector of coefficients *&theta;* and the intercept term *&theta;<sub>0</sub>* are estimated successively via a two-step procedure. See [Wang et al., 2020](https://www.math.ucsd.edu/~wez243/tfHuber.pdf) for more details of the two-step tuning-free framework.
 
+## Recent update
+
+Three functions of this package `huberMean`, `huberCov`, `huberReg` have been merged into another `R` library `FarmTest`, which has a [CRAN binary release](https://CRAN.R-project.org/package=FarmTest). To avoid the annoying compiling issues caused by this source package, we recommend installing `FarmTest`.
+
 ## Installation
 
 Install `tfHuber` from GitHub:
