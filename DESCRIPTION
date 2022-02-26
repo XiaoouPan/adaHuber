@@ -1,16 +1,16 @@
 Package: tfHuber
 Type: Package
 Title: Tuning-Free Huber Regression
-Version: 1.1
-Date: 2020-08-15
+Version: 1.2
+Date: 2022-02-25
 Authors@R: c(person("Xiaoou", "Pan", email = "xip024@ucsd.edu", role = c("aut", "cre")), 
              person("Wen-Xin", "Zhou", email = "wez243@ucsd.edu", role = "aut"))
-Description: A C++ implementation of Huber mean estimation, Huber regression and l1-regularized Huber regression (Huber-Lasso). Among all the methods, the robustification parameter tau is chosen by a tuning-free principle. In low dimensions, Huber regression estimators are calculated via gradient descent, and Huber-Lasso estimators are computed by the I-LAMM algorithm.
+Description: Huber mean estimation, Huber-type covariance estimation, Huber regression and l_1-regularized Huber regression. Among all the methods, the robustification parameter tau is chosen by a tuning-free principle.
 Depends: R (>= 3.5.0)
-License: GPL-2
+License: GPL-3
 Encoding: UTF-8
 URL: https://github.com/XiaoouPan/tfHuber
 SystemRequirements: C++11
-Imports: Rcpp
-LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 6.1.1
+Imports: Rcpp (>= 1.0.3)
+LinkingTo: Rcpp, RcppArmadillo (>= 0.9.850.1.0)
+RoxygenNote: 7.1.1
