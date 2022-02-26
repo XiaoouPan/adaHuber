@@ -1,6 +1,6 @@
-# tfHuber
+# adaHuber
 
-**T**uning-**F**ree **Huber** Estimation and Regression
+**Ada**ptive **Huber** Estimation and Regression
 
 ## Description
 
