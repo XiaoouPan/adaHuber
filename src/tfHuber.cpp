@@ -49,7 +49,7 @@ double rootf2(const arma::vec& resSq, const int n, const int d, double low, doub
 }
 
 // [[Rcpp::export]]
-Rcpp::List huberMean(const arma::vec& X, const double epsilon = 0.00001, const int iteMax = 500) {
+Rcpp::List huberMean(const arma::vec& X, const double epsilon = 0.0001, const int iteMax = 500) {
   int n = X.size();
   double muOld = 0;
   double muNew = arma::mean(X);
@@ -67,12 +67,10 @@ Rcpp::List huberMean(const arma::vec& X, const double epsilon = 0.00001, const i
     muNew = arma::as_scalar(X.t() * w) / arma::accu(w);
     iteNum++;
   }
-  return Rcpp::List::create(Rcpp::Named("mu") = muNew, Rcpp::Named("tau") = tauNew, 
-                            Rcpp::Named("iteration") = iteNum);
+  return Rcpp::List::create(Rcpp::Named("mu") = muNew, Rcpp::Named("tau") = tauNew, Rcpp::Named("iteration") = iteNum);
 }
 
-double hMeanCov(const arma::vec& Z, const int n, const int d, const int N, 
-                const double epsilon = 0.00001, const int iteMax = 500) {
+double hMeanCov(const arma::vec& Z, const int n, const int d, const int N, const double epsilon = 0.0001, const int iteMax = 500) {
   double muOld = 0;
   double muNew = arma::mean(Z);
   double tauOld = 0;
@@ -108,7 +106,7 @@ double hMeanCov(const arma::vec& Z, const int n, const int d, const int N,
 //' hubCov = huberCov(X)
 //' @export
 // [[Rcpp::export]]
-arma::mat huberCov(const arma::mat& X, const double epsilon = 0.00001, const int iteMax = 500) {
+arma::mat huberCov(const arma::mat& X, const double epsilon = 0.0001, const int iteMax = 500) {
   int n = X.n_rows;
   int p = X.n_cols;
   arma::vec mu(p);
@@ -166,8 +164,7 @@ arma::mat huberCov(const arma::mat& X, const double epsilon = 0.00001, const int
 //' thetaHuber = listHuber$theta
 //' @export
 // [[Rcpp::export]]
-Rcpp::List huberReg(const arma::mat& X, const arma::vec& Y, const double epsilon = 0.00001, 
-                    const double constTau = 1.345, const int iteMax = 500) {
+Rcpp::List huberReg(const arma::mat& X, const arma::vec& Y, const double epsilon = 0.0001, const double constTau = 1.345, const int iteMax = 500) {
   int n = X.n_rows;
   int d = X.n_cols;
   arma::mat Z(n, d + 1);
@@ -222,8 +219,7 @@ arma::vec cmptLambda(const arma::vec& beta, const double lambda) {
   return rst;
 }
 
-double loss(const arma::vec& Y, const arma::vec& Ynew, const std::string lossType,
-            const double tau) {
+double loss(const arma::vec& Y, const arma::vec& Ynew, const std::string lossType, const double tau) {
   double rst = 0;
   if (lossType == "l2") {
     rst = arma::mean(arma::square(Y - Ynew)) / 2;
