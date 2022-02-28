@@ -7,8 +7,7 @@ double f1(const double x, const arma::vec& resSq, const int n) {
   return arma::accu(arma::min(resSq, x * arma::ones(n))) / (n * x) - std::log(n) / n;
 }
 
-double rootf1(const arma::vec& resSq, const int n, double low, double up, const double tol = 0.00001, 
-              const int maxIte = 500) {
+double rootf1(const arma::vec& resSq, const int n, double low, double up, const double tol = 0.00001, const int maxIte = 500) {
   int ite = 0;
   double mid, val;
   while (ite <= maxIte && up - low > tol) {
@@ -31,8 +30,7 @@ double f2(const double x, const arma::vec& resSq, const int n, const int d) {
   return arma::accu(arma::min(resSq, x * arma::ones(N))) / (N * x) - (2 * std::log(d) + std::log(n)) / n;
 }
 
-double rootf2(const arma::vec& resSq, const int n, const int d, double low, double up, 
-              const double tol = 0.00001, const int maxIte = 500) {
+double rootf2(const arma::vec& resSq, const int n, const int d, double low, double up, const double tol = 0.00001, const int maxIte = 500) {
   int ite = 0;
   double mid, val;
   while (ite <= maxIte && up - low > tol) {
@@ -50,25 +48,6 @@ double rootf2(const arma::vec& resSq, const int n, const int d, double low, doub
   return (low + up) / 2;
 }
 
-//' @title Tuning-free Huber mean estimation
-//' @description The function calculates adaptive Huber mean estimator from a data sample, with \eqn{\tau} determined by a tuning-free principle.
-//' @details The observed data are \eqn{X}, which is an \eqn{n}-dimensional vector whose distribution can be asymmetrix and/or heavy-tailed. The function outputs a robust estimator for the mean of \eqn{X}.
-//' @param X An \eqn{n}-dimensional data vector.
-//' @param epsilon The tolerance level in the iterative estimation procedure, iteration will stop when \eqn{|\mu_new - \mu_old| < \epsilon} or \eqn{|\tau_new - \tau_old| < \epsilon}. The defalut value is 1e-5.
-//' @param iteMax The maximal number of iteration in the iterative estimation procedure, iteration will stop when this number is reached. The defalut value is 500.
-//' @return A list including the following terms will be returned:
-//' \itemize{
-//' \item \code{mu} The Huber mean estimator.
-//' \item \code{tau} The robustness parameter determined by the tuning-free principle.
-//' \item \code{iteration} The number of iterations in the estimation procedure.
-//' }
-//' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2018). A New Principle for Tuning-Free Huber Regression. Preprint.
-//' @examples
-//' n = 1000
-//' X = rlnorm(n, 0, 1.5) - exp(1.5^2 / 2)
-//' meanList = huberMean(X)
-//' hMean = meanList$mu
-//' @export
 // [[Rcpp::export]]
 Rcpp::List huberMean(const arma::vec& X, const double epsilon = 0.00001, const int iteMax = 500) {
   int n = X.size();
