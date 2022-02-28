@@ -1,3 +1,3 @@
-#' @useDynLib tfHuber
+#' @useDynLib adaHuber
 #' @importFrom Rcpp evalCpp
 NULL
