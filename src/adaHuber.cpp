@@ -239,7 +239,7 @@ void updateHuber(const arma::mat& Z, const arma::vec& res, arma::vec& der, arma:
 }
 
 // [[Rcpp::export]]
-Rcpp::List adaHuberReg(const arma::mat& X, arma::vec Y, const int n, const int p, const double tol = 0.0001, const int iteMax = 500) {
+Rcpp::List adaHuberReg(const arma::mat& X, arma::vec Y, const int n, const int p, const double epsilon = 0.0001, const int iteMax = 500) {
   const double n1 = 1.0 / n;
   double rhs = n1 * (p + std::log(n * p));
   arma::rowvec mx = arma::mean(X, 0);
@@ -258,7 +258,7 @@ Rcpp::List adaHuberReg(const arma::mat& X, arma::vec Y, const int n, const int p
   updateHuber(Z, res, der, gradNew, n, tau, n1);
   arma::vec gradDiff = gradNew - gradOld;
   int ite = 1;
-  while (arma::norm(gradNew, "inf") > tol && ite <= iteMax) {
+  while (arma::norm(gradNew, "inf") > epsilon && ite <= iteMax) {
     double alpha = 1.0;
     double cross = arma::as_scalar(betaDiff.t() * gradDiff);
     if (cross > 0) {
@@ -277,12 +277,12 @@ Rcpp::List adaHuberReg(const arma::mat& X, arma::vec Y, const int n, const int p
     ite++;
   }
   beta.rows(1, p) /= sx;
-  beta(0) = huberMean(Y + my - X * beta.rows(1, p), n);
+  beta(0) = huberMean(Y + my - X * beta.rows(1, p), n, epsilon, iteMax);
   return Rcpp::List::create(Rcpp::Named("coef") = beta, Rcpp::Named("tau") = tau, Rcpp::Named("iteration") = ite);
 }
 
 // [[Rcpp::export]]
-Rcpp::List huberReg(const arma::mat& X, arma::vec Y, const int n, const int p, const double tol = 0.0001, const double constTau = 1.345, 
+Rcpp::List huberReg(const arma::mat& X, arma::vec Y, const int n, const int p, const double epsilon = 0.0001, const double constTau = 1.345, 
                     const int iteMax = 500) {
   const double n1 = 1.0 / n;
   arma::rowvec mx = arma::mean(X, 0);
@@ -300,7 +300,7 @@ Rcpp::List huberReg(const arma::mat& X, arma::vec Y, const int n, const int p, c
   updateHuber(Z, res, der, gradNew, n, tau, n1);
   arma::vec gradDiff = gradNew - gradOld;
   int ite = 1;
-  while (arma::norm(gradNew, "inf") > tol && ite <= iteMax) {
+  while (arma::norm(gradNew, "inf") > epsilon && ite <= iteMax) {
     double alpha = 1.0;
     double cross = arma::as_scalar(betaDiff.t() * gradDiff);
     if (cross > 0) {
@@ -318,6 +318,6 @@ Rcpp::List huberReg(const arma::mat& X, arma::vec Y, const int n, const int p, c
     ite++;
   }
   beta.rows(1, p) /= sx;
-  beta(0) = huberMean(Y + my - X * beta.rows(1, p), n);
+  beta(0) = huberMean(Y + my - X * beta.rows(1, p), n, epsilon, iteMax);
   return Rcpp::List::create(Rcpp::Named("coef") = beta, Rcpp::Named("tau") = tau, Rcpp::Named("iteration") = ite);
 }
