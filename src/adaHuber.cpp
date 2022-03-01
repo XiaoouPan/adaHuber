@@ -84,7 +84,43 @@ double huberDer(const arma::vec& res, const double tau, const int n) {
 }
 
 // [[Rcpp::export]]
-Rcpp::List huberMean(arma::vec X, const int n, const double tol = 0.0001, const int iteMax = 500) {
+double huberMean(arma::vec X, const int n, const double tol = 0.0001, const int iteMax = 500) {
+  double rhs = std::log(n) / n;
+  double mx = arma::mean(X);
+  X -= mx;
+  double tau = arma::stddev(X) * std::sqrt((long double)n / std::log(n));
+  double derOld = huberDer(X, tau, n);
+  double mu = -derOld, muDiff = -derOld;
+  arma::vec res = X - mu;
+  arma::vec resSq = arma::square(res);
+  tau = std::sqrt((long double)rootf1(resSq, n, rhs, arma::min(resSq), arma::accu(resSq)));
+  double derNew = huberDer(res, tau, n);
+  double derDiff = derNew - derOld;
+  int ite = 1;
+  while (std::abs(derNew) > tol && ite <= iteMax) {
+    double alpha = 1.0;
+    double cross = muDiff * derDiff;
+    if (cross > 0) {
+      double a1 = cross / derDiff * derDiff;
+      double a2 = muDiff * muDiff / cross;
+      alpha = std::min(std::min(a1, a2), 100.0);
+    }
+    derOld = derNew;
+    muDiff = -alpha * derNew;
+    mu += muDiff;
+    res = X - mu;
+    resSq = arma::square(res);
+    tau = std::sqrt((long double)rootf1(resSq, n, rhs, arma::min(resSq), arma::accu(resSq)));
+    derNew = huberDer(res, tau, n);
+    derDiff = derNew - derOld;
+    ite++;
+  }
+  return mu + mx;
+}
+
+// The function that is called in R
+// [[Rcpp::export]]
+Rcpp::List huberMeanList(arma::vec X, const int n, const double tol = 0.0001, const int iteMax = 500) {
   double rhs = std::log(n) / n;
   double mx = arma::mean(X);
   X -= mx;
@@ -120,7 +156,7 @@ Rcpp::List huberMean(arma::vec X, const int n, const double tol = 0.0001, const 
 }
 
 // [[Rcpp::export]]
-arma::vec huberMeanVec(const arma::mat& X, const int n, const int p, const double epsilon = 0.001, const int iteMax = 500) {
+arma::vec huberMeanVec(const arma::mat& X, const int n, const int p, const double epsilon = 0.0001, const int iteMax = 500) {
   arma::vec rst(p);
   for (int i = 0; i < p; i++) {
     rst(i) = huberMean(X.col(i), n, epsilon, iteMax);
@@ -148,13 +184,13 @@ double hMeanCov(const arma::vec& Z, const int n, const int d, const int N, doubl
 }
 
 // [[Rcpp::export]]
-Rcpp::List huberCov(const arma::mat& X, const int n, const int p) {
+Rcpp::List huberCov(const arma::mat& X, const int n, const int p, const double epsilon = 0.0001, const int iteMax = 500) {
   double rhs2 = (2 * std::log(p) + std::log(n)) / n;
   arma::vec mu(p);
   arma::mat sigmaHat(p, p);
   for (int j = 0; j < p; j++) {
-    mu(j) = huberMean(X.col(j), n);
-    double theta = huberMean(arma::square(X.col(j)), n);
+    mu(j) = huberMean(X.col(j), n, epsilon, iteMax);
+    double theta = huberMean(arma::square(X.col(j)), n, epsilon, iteMax);
     double temp = mu(j) * mu(j);
     if (theta > temp) {
       theta -= temp;
@@ -203,7 +239,7 @@ void updateHuber(const arma::mat& Z, const arma::vec& res, arma::vec& der, arma:
 }
 
 // [[Rcpp::export]]
-arma::vec adaHuberReg(const arma::mat& X, arma::vec Y, const int n, const int p, const double tol = 0.0001, const int iteMax = 5000) {
+Rcpp::List adaHuberReg(const arma::mat& X, arma::vec Y, const int n, const int p, const double tol = 0.0001, const int iteMax = 500) {
   const double n1 = 1.0 / n;
   double rhs = n1 * (p + std::log(n * p));
   arma::rowvec mx = arma::mean(X, 0);
@@ -242,12 +278,12 @@ arma::vec adaHuberReg(const arma::mat& X, arma::vec Y, const int n, const int p,
   }
   beta.rows(1, p) /= sx;
   beta(0) = huberMean(Y + my - X * beta.rows(1, p), n);
-  return beta;
+  return Rcpp::List::create(Rcpp::Named("coef") = beta, Rcpp::Named("tau") = tau, Rcpp::Named("iteration") = ite);
 }
 
 // [[Rcpp::export]]
-arma::vec huberReg(const arma::mat& X, arma::vec Y, const int n, const int p, const double tol = 0.0001, const double constTau = 1.345, 
-                   const int iteMax = 5000) {
+Rcpp::List huberReg(const arma::mat& X, arma::vec Y, const int n, const int p, const double tol = 0.0001, const double constTau = 1.345, 
+                    const int iteMax = 500) {
   const double n1 = 1.0 / n;
   arma::rowvec mx = arma::mean(X, 0);
   arma::vec sx = arma::stddev(X, 0, 0).t();
@@ -283,5 +319,5 @@ arma::vec huberReg(const arma::mat& X, arma::vec Y, const int n, const int p, co
   }
   beta.rows(1, p) /= sx;
   beta(0) = huberMean(Y + my - X * beta.rows(1, p), n);
-  return beta;
+  return Rcpp::List::create(Rcpp::Named("coef") = beta, Rcpp::Named("tau") = tau, Rcpp::Named("iteration") = ite);
 }
