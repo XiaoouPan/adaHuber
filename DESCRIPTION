@@ -1,15 +1,15 @@
-Package: tfHuber
+Package: adaHuber
 Type: Package
-Title: Tuning-Free Huber Regression
+Title: Adaptive Huber Estimation and Regression
 Version: 1.2
 Date: 2022-02-25
 Authors@R: c(person("Xiaoou", "Pan", email = "xip024@ucsd.edu", role = c("aut", "cre")), 
              person("Wen-Xin", "Zhou", email = "wez243@ucsd.edu", role = "aut"))
-Description: Huber mean estimation, Huber-type covariance estimation, Huber regression and l_1-regularized Huber regression. Among all the methods, the robustification parameter tau is chosen by a tuning-free principle.
+Description: Huber-type estimation for mean, covariance and (regularized) regression. For all the methods, the robustification parameter tau is chosen by a tuning-free principle.
 Depends: R (>= 3.5.0)
 License: GPL-3
 Encoding: UTF-8
-URL: https://github.com/XiaoouPan/tfHuber
+URL: https://github.com/XiaoouPan/adaHuber
 SystemRequirements: C++11
 Imports: Rcpp (>= 1.0.3)
 LinkingTo: Rcpp, RcppArmadillo (>= 0.9.850.1.0)
