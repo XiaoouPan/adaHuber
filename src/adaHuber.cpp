@@ -218,9 +218,9 @@ double mad(const arma::vec& x) {
 }
 
 // [[Rcpp::export]]
-arma::mat standardize(arma::mat X, const arma::rowvec& mx, const arma::vec& sx, const int p) {
+arma::mat standardize(arma::mat X, const arma::rowvec& mx, const arma::vec& sx1, const int p) {
   for (int i = 0; i < p; i++) {
-    X.col(i) = (X.col(i) - mx(i)) / sx(i);
+    X.col(i) = (X.col(i) - mx(i)) * sx1(i);
   }
   return X;
 }
@@ -243,9 +243,9 @@ Rcpp::List adaHuberReg(const arma::mat& X, arma::vec Y, const int n, const int p
   const double n1 = 1.0 / n;
   double rhs = n1 * (p + std::log(n * p));
   arma::rowvec mx = arma::mean(X, 0);
-  arma::vec sx = arma::stddev(X, 0, 0).t();
+  arma::vec sx1 = 1.0 / arma::stddev(X, 0, 0).t();
   double my = arma::mean(Y);
-  arma::mat Z = arma::join_rows(arma::ones(n), standardize(X, mx, sx, p));
+  arma::mat Z = arma::join_rows(arma::ones(n), standardize(X, mx, sx1, p));
   Y -= my;
   double tau = 1.345 * mad(Y);
   arma::vec der(n);
@@ -276,7 +276,7 @@ Rcpp::List adaHuberReg(const arma::mat& X, arma::vec Y, const int n, const int p
     gradDiff = gradNew - gradOld;
     ite++;
   }
-  beta.rows(1, p) /= sx;
+  beta.rows(1, p) %= sx1;
   beta(0) = huberMean(Y + my - X * beta.rows(1, p), n, epsilon, iteMax);
   return Rcpp::List::create(Rcpp::Named("coef") = beta, Rcpp::Named("tau") = tau, Rcpp::Named("iteration") = ite);
 }
@@ -286,9 +286,9 @@ Rcpp::List huberReg(const arma::mat& X, arma::vec Y, const int n, const int p, c
                     const int iteMax = 500) {
   const double n1 = 1.0 / n;
   arma::rowvec mx = arma::mean(X, 0);
-  arma::vec sx = arma::stddev(X, 0, 0).t();
+  arma::vec sx1 = 1.0 / arma::stddev(X, 0, 0).t();
   double my = arma::mean(Y);
-  arma::mat Z = arma::join_rows(arma::ones(n), standardize(X, mx, sx, p));
+  arma::mat Z = arma::join_rows(arma::ones(n), standardize(X, mx, sx1, p));
   Y -= my;
   double tau = constTau * mad(Y);
   arma::vec der(n);
@@ -317,7 +317,7 @@ Rcpp::List huberReg(const arma::mat& X, arma::vec Y, const int n, const int p, c
     gradDiff = gradNew - gradOld;
     ite++;
   }
-  beta.rows(1, p) /= sx;
+  beta.rows(1, p) %= sx1;
   beta(0) = huberMean(Y + my - X * beta.rows(1, p), n, epsilon, iteMax);
   return Rcpp::List::create(Rcpp::Named("coef") = beta, Rcpp::Named("tau") = tau, Rcpp::Named("iteration") = ite);
 }
