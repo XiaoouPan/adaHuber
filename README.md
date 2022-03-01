@@ -10,6 +10,10 @@ Specifically, for Huber regression, assume the observed data vectors (*Y*, *X*) 
 
 ## Recent update
 
+2022-02-28
+
+We are updating the package and will submit a new version to CRAN soon.
+
 The most efficient implementation of three functions `huberMean`, `huberCov`, `huberReg` in this package have been merged into another `R` library `FarmTest`, which has a [CRAN binary release](https://CRAN.R-project.org/package=FarmTest). To avoid the annoying compiling issues caused by this source package, and experience faster and more stable computation, we recommend installing `FarmTest`.
 
 ## Installation
