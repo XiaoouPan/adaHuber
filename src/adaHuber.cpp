@@ -31,49 +31,6 @@ double rootf1(const arma::vec& resSq, const int n, const double rhs, double low,
 }
 
 // [[Rcpp::export]]
-double f2(const double x, const arma::vec& resSq, const int N, const double rhs) {
-  return arma::mean(arma::min(resSq / x, arma::ones(N))) - rhs;
-}
-
-// [[Rcpp::export]]
-double rootf2(const arma::vec& resSq, const int n, const int d, const int N, const double rhs, double low, double up, const double tol = 0.001, 
-              const int maxIte = 500) {
-  int ite = 0;
-  while (ite <= maxIte && up - low > tol) {
-    double mid = 0.5 * (up + low);
-    double val = f2(mid, resSq, N, rhs);
-    if (val < 0) {
-      up = mid;
-    } else {
-      low = mid;
-    }
-    ite++;
-  }
-  return 0.5 * (low + up);
-}
-
-// [[Rcpp::export]]
-double g1(const double x, const arma::vec& resSq, const int n, const double rhs) {
-  return arma::mean(arma::min(resSq / x, arma::ones(n))) - rhs;
-}
-
-// [[Rcpp::export]]
-double rootg1(const arma::vec& resSq, const int n, const double rhs, double low, double up, const double tol = 0.001, const int maxIte = 500) {
-  int ite = 0;
-  while (ite <= maxIte && up - low > tol) {
-    double mid = 0.5 * (up + low);
-    double val = g1(mid, resSq, n, rhs);
-    if (val < 0) {
-      up = mid;
-    } else {
-      low = mid;
-    }
-    ite++;
-  }
-  return 0.5 * (low + up);
-}
-
-// [[Rcpp::export]]
 double huberDer(const arma::vec& res, const double tau, const int n) {
   double rst = 0.0;
   for (int i = 0; i < n; i++) {
@@ -176,7 +133,7 @@ double hMeanCov(const arma::vec& Z, const int n, const int d, const int N, doubl
     muOld = muNew;
     res = Z - muOld;
     resSq = arma::square(res);
-    tau = std::sqrt((long double)rootf2(resSq, n, d, N, rhs, arma::min(resSq), arma::accu(resSq)));
+    tau = std::sqrt((long double)rootf1(resSq, N, rhs, arma::min(resSq), arma::accu(resSq)));
     w = arma::min(tau / arma::abs(res), arma::ones(N));
     muNew = arma::as_scalar(Z.t() * w) / arma::accu(w);
     iteNum++;
@@ -259,7 +216,7 @@ Rcpp::List adaHuberReg(const arma::mat& X, arma::vec Y, const double epsilon = 0
   arma::vec beta = -gradOld, betaDiff = -gradOld;
   arma::vec res = Y - Z * beta;
   arma::vec resSq = arma::square(res);
-  tau = std::sqrt((long double)rootg1(resSq, n, rhs, arma::min(resSq), arma::accu(resSq)));
+  tau = std::sqrt((long double)rootf1(resSq, n, rhs, arma::min(resSq), arma::accu(resSq)));
   updateHuber(Z, res, der, gradNew, n, tau, n1);
   arma::vec gradDiff = gradNew - gradOld;
   int ite = 1;
@@ -276,7 +233,7 @@ Rcpp::List adaHuberReg(const arma::mat& X, arma::vec Y, const double epsilon = 0
     beta += betaDiff;
     res -= Z * betaDiff;
     resSq = arma::square(res);
-    tau = std::sqrt((long double)rootg1(resSq, n, rhs, arma::min(resSq), arma::accu(resSq)));
+    tau = std::sqrt((long double)rootf1(resSq, n, rhs, arma::min(resSq), arma::accu(resSq)));
     updateHuber(Z, res, der, gradNew, n, tau, n1);
     gradDiff = gradNew - gradOld;
     ite++;
@@ -477,36 +434,5 @@ Rcpp::List huberLassoTf(const arma::mat& X, arma::vec& Y, const double lambda, c
   betaNew.rows(1, p) %= sx1;
   betaNew(0) += my - arma::as_scalar(mx * betaNew.rows(1, p));
   return Rcpp::List::create(Rcpp::Named("coef") = betaNew, Rcpp::Named("iteration") = ite, Rcpp::Named("phi") = phi);
-}
-
-// Huber-lasso with cross-validation
-// [[Rcpp::export]]
-Rcpp::List cvSmqrLassoGauss(const arma::mat& X, arma::vec Y, const arma::vec& lambdaSeq, const arma::vec& folds, const double tau, const int kfolds, 
-                            const double h, const double phi0 = 0.01, const double gamma = 1.2, const double epsilon = 0.001, const int iteMax = 500) {
-  const int n = X.n_rows, p = X.n_cols, nlambda = lambdaSeq.size();
-  const double h1 = 1.0 / h, h2 = 1.0 / (h * h);
-  arma::vec betaHat(p + 1);
-  arma::vec mse = arma::zeros(nlambda);
-  arma::rowvec mx = arma::mean(X, 0);
-  arma::vec sx1 = 1.0 / arma::stddev(X, 0, 0).t();
-  arma::mat Z = arma::join_rows(arma::ones(n), standardize(X, mx, sx1, p));
-  double my = arma::mean(Y);
-  Y -= my;
-  for (int j = 1; j <= kfolds; j++) {
-    arma::uvec idx = arma::find(folds == j);
-    arma::uvec idxComp = arma::find(folds != j);
-    double n1Train = 1.0 / idxComp.size();
-    arma::mat trainZ = Z.rows(idxComp), testZ = Z.rows(idx);
-    arma::vec trainY = Y.rows(idxComp), testY = Y.rows(idx);
-    for (int i = 0; i < nlambda; i++) {
-      betaHat = smqrLassoGauss(trainZ, trainY, lambdaSeq(i), sx1, tau, p, n1Train, h, h1, h2, phi0, gamma, epsilon, iteMax);
-      mse(i) += arma::accu(lossQr(testZ, testY, betaHat, tau));
-    }
-  }
-  arma::uword cvIdx = arma::index_min(mse);
-  betaHat = smqrLassoGauss(Z, Y, lambdaSeq(cvIdx), sx1, tau, p, 1.0 / n, h, h1, h2, phi0, gamma, epsilon, iteMax);
-  betaHat.rows(1, p) %= sx1;
-  betaHat(0) += my - arma::as_scalar(mx * betaHat.rows(1, p));
-  return Rcpp::List::create(Rcpp::Named("coeff") = betaHat, Rcpp::Named("lambda") = lambdaSeq(cvIdx));
 }
 
