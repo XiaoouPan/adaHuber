@@ -30,6 +30,29 @@ double rootf1(const arma::vec& resSq, const int n, const double rhs, double low,
   return 0.5 * (low + up);
 }
 
+// Functions for high-dim tunning-free calibration
+// [[Rcpp::export]]
+double f2(const double x, const arma::vec& resSq, const int n, const int s, const double rhs) {
+  return arma::accu(arma::min(resSq / x, arma::ones(n))) / (n - s) - rhs;
+}
+
+// [[Rcpp::export]]
+double rootf2(const arma::vec& resSq, const int n, const int s, const double rhs, double low, double up, const double tol = 0.001, 
+              const int maxIte = 500) {
+  int ite = 1;
+  while (ite <= maxIte && up - low > tol) {
+    double mid = 0.5 * (up + low);
+    double val = f2(mid, resSq, n, s, rhs);
+    if (val < 0) {
+      up = mid;
+    } else {
+      low = mid;
+    }
+    ite++;
+  }
+  return 0.5 * (low + up);
+}
+
 // [[Rcpp::export]]
 double huberDer(const arma::vec& res, const double tau, const int n) {
   double rst = 0.0;
@@ -405,10 +428,16 @@ Rcpp::List huberLassoList(const arma::mat& X, arma::vec& Y, const double lambda,
   return Rcpp::List::create(Rcpp::Named("coef") = betaNew, Rcpp::Named("iteration") = ite, Rcpp::Named("phi") = phi);
 }
 
+// [[Rcpp::export]]
+int sparsity(const arma::vec& x) {
+  arma::vec temp = arma::nonzeros(x);
+  return temp.size();
+}
+
 // Huber-lasso with a specified lambda and a tuning-free tau
 // [[Rcpp::export]]
-Rcpp::List huberLassoTf(const arma::mat& X, arma::vec& Y, const double lambda, const double constTau = 2.5, const double phi0 = 0.1, 
-                        const double gamma = 1.2, const double epsilon = 0.001, const int iteMax = 500) {
+Rcpp::List huberLassoTf(const arma::mat& X, arma::vec& Y, const double lambda, const double phi0 = 0.1, const double gamma = 1.2, 
+                        const double epsilon = 0.001, const int iteMax = 500) {
   const int n = X.n_rows, p = X.n_cols;
   const double n1 = 1.0 / n;
   arma::rowvec mx = arma::mean(X, 0);
@@ -419,7 +448,8 @@ Rcpp::List huberLassoTf(const arma::mat& X, arma::vec& Y, const double lambda, c
   arma::vec beta = arma::zeros(p + 1);
   arma::vec betaNew = arma::zeros(p + 1);
   arma::vec Lambda = cmptLambdaLasso(lambda, p);
-  double tau = constTau * mad(Y);
+  double rhs = n1 * (std::log(n * p));
+  double tau = 1.345 * mad(Y);
   double phi = phi0;
   int ite = 0;
   while (ite <= iteMax) {
@@ -430,9 +460,13 @@ Rcpp::List huberLassoTf(const arma::mat& X, arma::vec& Y, const double lambda, c
       break;
     }
     beta = betaNew;
+    int sparse = sparsity(beta);
+    arma::vec res = Y - Z * beta;
+    arma::vec resSq = arma::square(Y);
+    tau = std::sqrt((long double)rootf2(resSq, n, sparse, rhs, arma::min(resSq), arma::accu(resSq)));
   }
   betaNew.rows(1, p) %= sx1;
   betaNew(0) += my - arma::as_scalar(mx * betaNew.rows(1, p));
-  return Rcpp::List::create(Rcpp::Named("coef") = betaNew, Rcpp::Named("iteration") = ite, Rcpp::Named("phi") = phi);
+  return Rcpp::List::create(Rcpp::Named("coef") = betaNew, Rcpp::Named("iteration") = ite, Rcpp::Named("tau") = tau, Rcpp::Named("phi") = phi);
 }
 
