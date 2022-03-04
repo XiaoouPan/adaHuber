@@ -1,7 +1,7 @@
-#' @title Adaptive Huber mean estimation
+#' @title Adaptive Huber Mean Estimation
 #' @description Adaptive Huber mean estimator from a data sample, with \eqn{\tau} determined by a tuning-free principle.
 #' @param X An \eqn{n}-dimensional data vector.
-#' @param epsilon (\strong{optional}) The tolerance level in the iterative estimation procedure, iteration will stop when \eqn{|\mu_new - \mu_old| < \epsilon} or \eqn{|\tau_new - \tau_old| < \epsilon}. The defalut value is 1e-4.
+#' @param epsilon (\strong{optional}) The tolerance level in the iterative estimation procedure, iteration will stop when \eqn{|\mu_new - \mu_old| < \epsilon}. The defalut value is 1e-4.
 #' @param iteMax (\strong{optional}) Maximum number of iterations. Default is 500.
 #' @return A list including the following terms will be returned:
 #' \describe{
@@ -13,12 +13,38 @@
 #' @author Xiaoou Pan <xip024@ucsd.edu> and Wen-Xin Zhou <wez243@ucsd.edu>
 #' @examples 
 #' n = 1000
-#' X = rlnorm(n, 0, 1.5) - exp(1.5^2 / 2)
-#' mean.list = adaHuber.mean(X)
-#' mean.list$mu
+#' mu = 2
+#' X = rt(n, 2) + mu
+#' fit.mean = adaHuber.mean(X)
+#' fit.mean$mu
 #' @export 
 adaHuber.mean = function(X, epsilon = 0.0001, iteMax = 500) {
-  return (huberMean(X, epsilon, iteMax))
+  return (huberMeanList(X, epsilon, iteMax))
+}
+
+#' @title Adaptive Huber Covariance Estimation
+#' @description Adaptive Huber covariance estimator from a data sample, with \eqn{\tau} determined by a tuning-free principle.
+#' @details The observed data \eqn{X} is an \eqn{n} by \eqn{p} matrix. The distribution of each entry can be asymmetrix and/or heavy-tailed. The function outputs a robust estimator for the covariance matrix of \eqn{X}.
+#' @param X An \eqn{n} by \eqn{p} data matrix.
+#' @param epsilon (\strong{optional}) The tolerance level in the iterative estimation procedure. The problem is converted to mean estimation, and the stopping rule is the same as \code{adaHuber.mean}. The defalut value is 1e-4.
+#' @param iteMax (\strong{optional}) Maximum number of iterations. Default is 500.
+#' @return A list including the following terms will be returned:
+#' \describe{
+#' \item{\code{means}}{The Huber estimators for column means. A \eqn{p}-dimensional vector.}
+#' \item{\code{cov}}{The Huber estimator for covariance matrix. A \eqn{p} by \eqn{p} matrix.}
+#' }
+#' @references Ke, Y., Minsker, S., Ren, Z., Sun, Q. and Zhou, W.-X. (2019). User-friendly covariance estimation for heavy-tailed distributions. Statis. Sci. 34 454-471.
+#' @author Xiaoou Pan <xip024@ucsd.edu> and Wen-Xin Zhou <wez243@ucsd.edu>
+#' @examples 
+#' n = 100
+#' p = 20
+#' X = matrix(rt(n * p, 3), n, p)
+#' fit.cov = adaHuber.cov(X)
+#' fit.cov$means
+#' fit.cov$cov
+#' @export 
+adaHuber.cov = function(X, epsilon = 0.0001, iteMax = 500) {
+  return (huberCov(X, epsilon, iteMax))
 }
 
 #' @title Convolution-Type Smoothed Quantile Regression
