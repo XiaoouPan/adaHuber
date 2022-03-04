@@ -31,7 +31,7 @@ double rootf1(const arma::vec& resSq, const int n, const double rhs, double low,
 }
 
 // Functions for high-dim tunning-free calibration
-// [[Rcpp::export]]
+/*// [[Rcpp::export]]
 double f2(const double x, const arma::vec& resSq, const int n, const int s, const double rhs) {
   return arma::accu(arma::min(resSq / x, arma::ones(n))) / (n - s) - rhs;
 }
@@ -51,7 +51,7 @@ double rootf2(const arma::vec& resSq, const int n, const int s, const double rhs
     ite++;
   }
   return 0.5 * (low + up);
-}
+}*/
 
 // [[Rcpp::export]]
 double huberDer(const arma::vec& res, const double tau, const int n) {
@@ -435,8 +435,8 @@ int sparsity(const arma::vec& x) {
 }
 
 // [[Rcpp::export]]
-arma::vec huberLassoTf(const arma::mat& Z, const arma::vec& Y, const double lambda, const int p, const double phi0 = 0.1, const double gamma = 1.2, 
-                       const double epsilon = 0.001, const int iteMax = 500) {
+arma::vec adaHuberLasso(const arma::mat& Z, const arma::vec& Y, const double lambda, const int p, const double phi0 = 0.1, const double gamma = 1.2, 
+                        const double epsilon = 0.001, const int iteMax = 500) {
   const int n = Z.n_rows;
   const double n1 = 1.0 / n;
   arma::vec beta = arma::zeros(p + 1);
@@ -454,45 +454,18 @@ arma::vec huberLassoTf(const arma::mat& Z, const arma::vec& Y, const double lamb
       break;
     }
     beta = betaNew;
-    int sparse = sparsity(beta);
+    //int sparse = sparsity(beta);
     arma::vec res = Y - Z * beta;
     arma::vec resSq = arma::square(Y);
-    tau = std::sqrt((long double)rootf2(resSq, n, sparse, rhs, arma::min(resSq), arma::accu(resSq)));
+    tau = std::sqrt((long double)rootf1(resSq, n, rhs, arma::min(resSq), arma::accu(resSq)));
   }
   return betaNew;
 }
 
-// [[Rcpp::export]]
-Rcpp::List huberLassoNonstd(const arma::mat& Z, const arma::vec& Y, const double lambda, const int n, const int p, const double phi0 = 0.1, 
-                            const double gamma = 1.2, const double epsilon = 0.001, const int iteMax = 500) {
-  const double n1 = 1.0 / n;
-  arma::vec beta = arma::zeros(p + 1);
-  arma::vec betaNew = arma::zeros(p + 1);
-  arma::vec Lambda = cmptLambdaLasso(lambda, p);
-  double rhs = n1 * (std::log(n * p));
-  double tau = 1.345 * mad(Y);
-  double phi = phi0;
-  int ite = 0;
-  while (ite <= iteMax) {
-    ite++;
-    phi = lamm(Z, Y, Lambda, betaNew, tau, phi, gamma, p, n1);
-    phi = std::max(phi0, phi / gamma);
-    if (arma::norm(betaNew - beta, "inf") <= epsilon) {
-      break;
-    }
-    beta = betaNew;
-    int sparse = sparsity(beta);
-    arma::vec res = Y - Z * beta;
-    arma::vec resSq = arma::square(Y);
-    tau = std::sqrt((long double)rootf2(resSq, n, sparse, rhs, arma::min(resSq), arma::accu(resSq)));
-  }
-  return Rcpp::List::create(Rcpp::Named("coef") = betaNew, Rcpp::Named("iteration") = ite, Rcpp::Named("tau") = tau, Rcpp::Named("phi") = phi);
-}
-
 // Huber-lasso with a specified lambda and a tuning-free tau. It is called in R.
 // [[Rcpp::export]]
-Rcpp::List huberLassoTfList(const arma::mat& X, arma::vec& Y, const double lambda, const double phi0 = 0.1, const double gamma = 1.2, 
-                            const double epsilon = 0.001, const int iteMax = 500) {
+Rcpp::List adaHuberLassoList(const arma::mat& X, arma::vec& Y, const double lambda, const double phi0 = 0.1, const double gamma = 1.2, 
+                             const double epsilon = 0.001, const int iteMax = 500) {
   const int n = X.n_rows, p = X.n_cols;
   const double n1 = 1.0 / n;
   arma::rowvec mx = arma::mean(X, 0);
@@ -515,10 +488,10 @@ Rcpp::List huberLassoTfList(const arma::mat& X, arma::vec& Y, const double lambd
       break;
     }
     beta = betaNew;
-    int sparse = sparsity(beta);
+    //int sparse = sparsity(beta);
     arma::vec res = Y - Z * beta;
     arma::vec resSq = arma::square(Y);
-    tau = std::sqrt((long double)rootf2(resSq, n, sparse, rhs, arma::min(resSq), arma::accu(resSq)));
+    tau = std::sqrt((long double)rootf1(resSq, n, rhs, arma::min(resSq), arma::accu(resSq)));
   }
   betaNew.rows(1, p) %= sx1;
   betaNew(0) += my - arma::as_scalar(mx * betaNew.rows(1, p));
@@ -533,8 +506,8 @@ double lossL2(const arma::mat& Z, const arma::vec& Y, const arma::vec& beta) {
 
 // cross-validated l1-penalized Huber regression
 // [[Rcpp::export]]
-Rcpp::List cvHuberLassoTf(const arma::mat& X, arma::vec& Y, const arma::vec& lambdaSeq, const arma::vec& folds, const int kfolds, 
-                          const double phi0 = 0.1, const double gamma = 1.2, const double epsilon = 0.001, const int iteMax = 500) {
+Rcpp::List cvAdaHuberLasso(const arma::mat& X, arma::vec& Y, const arma::vec& lambdaSeq, const arma::vec& folds, const int kfolds, 
+                           const double phi0 = 0.1, const double gamma = 1.2, const double epsilon = 0.001, const int iteMax = 500) {
   const int n = X.n_rows, p = X.n_cols, nlambda = lambdaSeq.size();
   const double n1 = 1.0 / n;
   arma::rowvec mx = arma::mean(X, 0);
@@ -550,7 +523,7 @@ Rcpp::List cvHuberLassoTf(const arma::mat& X, arma::vec& Y, const arma::vec& lam
     arma::mat trainZ = Z.rows(idxComp), testZ = Z.rows(idx);
     arma::vec trainY = Y.rows(idxComp), testY = Y.rows(idx);
     for (int i = 0; i < nlambda; i++) {
-      betaHat = huberLassoTf(trainZ, trainY, lambdaSeq(i), p, phi0, gamma, epsilon, iteMax);
+      betaHat = adaHuberLasso(trainZ, trainY, lambdaSeq(i), p, phi0, gamma, epsilon, iteMax);
       mse(i) += lossL2(testZ, testY, betaHat);
     }
   }
@@ -570,14 +543,12 @@ Rcpp::List cvHuberLassoTf(const arma::mat& X, arma::vec& Y, const arma::vec& lam
       break;
     }
     beta = betaNew;
-    int sparse = sparsity(beta);
+    //int sparse = sparsity(beta);
     arma::vec res = Y - Z * beta;
     arma::vec resSq = arma::square(Y);
-    tau = std::sqrt((long double)rootf2(resSq, n, sparse, rhs, arma::min(resSq), arma::accu(resSq)));
+    tau = std::sqrt((long double)rootf1(resSq, n, rhs, arma::min(resSq), arma::accu(resSq)));
   }
   betaNew.rows(1, p) %= sx1;
   betaNew(0) += my - arma::as_scalar(mx * betaNew.rows(1, p));
   return Rcpp::List::create(Rcpp::Named("coef") = betaNew, Rcpp::Named("iteration") = ite, Rcpp::Named("tau") = tau, Rcpp::Named("phi") = phi);
 }
-
-
