@@ -164,6 +164,7 @@ double hMeanCov(const arma::vec& Z, const int n, const int d, const int N, doubl
   return muNew;
 }
 
+// The function for covariance estimation called in R.
 // [[Rcpp::export]]
 Rcpp::List huberCov(const arma::mat& X, const double epsilon = 0.0001, const int iteMax = 500) {
   int n = X.n_rows;
