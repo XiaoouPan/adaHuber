@@ -488,7 +488,6 @@ Rcpp::List adaHuberLassoList(const arma::mat& X, arma::vec& Y, const double lamb
       break;
     }
     beta = betaNew;
-    //int sparse = sparsity(beta);
     arma::vec res = Y - Z * beta;
     arma::vec resSq = arma::square(Y);
     tau = std::sqrt((long double)rootf1(resSq, n, rhs, arma::min(resSq), arma::accu(resSq)));
@@ -543,7 +542,6 @@ Rcpp::List cvAdaHuberLasso(const arma::mat& X, arma::vec& Y, const arma::vec& la
       break;
     }
     beta = betaNew;
-    //int sparse = sparsity(beta);
     arma::vec res = Y - Z * beta;
     arma::vec resSq = arma::square(Y);
     tau = std::sqrt((long double)rootf1(resSq, n, rhs, arma::min(resSq), arma::accu(resSq)));
