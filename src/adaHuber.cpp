@@ -549,5 +549,6 @@ Rcpp::List cvAdaHuberLasso(const arma::mat& X, arma::vec& Y, const arma::vec& la
   }
   betaNew.rows(1, p) %= sx1;
   betaNew(0) += my - arma::as_scalar(mx * betaNew.rows(1, p));
-  return Rcpp::List::create(Rcpp::Named("coef") = betaNew, Rcpp::Named("iteration") = ite, Rcpp::Named("tau") = tau, Rcpp::Named("phi") = phi);
+  return Rcpp::List::create(Rcpp::Named("coef") = betaNew, Rcpp::Named("tau") = tau, Rcpp::Named("lambda") = lambdaSeq(cvIdx), 
+                            Rcpp::Named("iteration") = ite, Rcpp::Named("phi") = phi);
 }
