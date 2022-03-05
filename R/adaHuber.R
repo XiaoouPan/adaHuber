@@ -10,7 +10,7 @@
 #' \item{\code{iteration}}{The number of iterations in the estimation procedure.}
 #' }
 #' @references Huber, P. J. (1964). Robust estimation of a location parameter. Ann. Math. Statist., 35, 73–101.
-#' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2021). A new principle for tuning-free Huber regression. Stat. Sinica 31 2153-2177.
+#' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2021). A new principle for tuning-free Huber regression. Stat. Sinica, 31, 2153-2177.
 #' @examples 
 #' n = 1000
 #' mu = 2
@@ -34,7 +34,7 @@ adaHuber.mean = function(X, epsilon = 0.0001, iteMax = 500) {
 #' \item{\code{cov}}{The Huber estimator for covariance matrix. A \eqn{p} by \eqn{p} matrix.}
 #' }
 #' @references Huber, P. J. (1964). Robust estimation of a location parameter. Ann. Math. Statist., 35, 73–101.
-#' @references Ke, Y., Minsker, S., Ren, Z., Sun, Q. and Zhou, W.-X. (2019). User-friendly covariance estimation for heavy-tailed distributions. Statis. Sci. 34 454-471.
+#' @references Ke, Y., Minsker, S., Ren, Z., Sun, Q. and Zhou, W.-X. (2019). User-friendly covariance estimation for heavy-tailed distributions. Statis. Sci., 34, 454-471.
 #' @seealso \code{\link{adaHuber.mean}} for adaptive Huber mean estimation.
 #' @examples 
 #' n = 100
@@ -45,7 +45,8 @@ adaHuber.mean = function(X, epsilon = 0.0001, iteMax = 500) {
 #' fit.cov$cov
 #' @export 
 adaHuber.cov = function(X, epsilon = 0.0001, iteMax = 500) {
-  return (huberCov(X, epsilon, iteMax))
+  fit = huberCov(X, epsilon, iteMax)
+  return (list(means = as.numeric(fit$means), cov = fit$cov))
 }
 
 #' @title Adaptive Huber Regression
@@ -59,11 +60,11 @@ adaHuber.cov = function(X, epsilon = 0.0001, iteMax = 500) {
 #' \describe{
 #' \item{\code{coef}}{A \eqn{(p + 1)}-vector of estimated regression coefficients, including the intercept.}
 #' \item{\code{tau}}{The robustification parameter calibrated by the tuning-free principle.}
-#' \item{\code{ite}}{Number of iterations until convergence.}
+#' \item{\code{iteration}}{Number of iterations until convergence.}
 #' }
 #' @references Huber, P. J. (1964). Robust estimation of a location parameter. Ann. Math. Statist., 35, 73–101.
 #' @references Sun, Q., Zhou, W.-X. and Fan, J. (2020). Adaptive Huber regression. J. Amer. Statist. Assoc., 115, 254-265.
-#' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2021). A new principle for tuning-free Huber regression. Stat. Sinica 31 2153-2177.
+#' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2021). A new principle for tuning-free Huber regression. Stat. Sinica, 31, 2153-2177.
 #' @examples
 #' n = 200
 #' p = 10
@@ -95,61 +96,43 @@ adaHuber.reg = function(X, Y, method = c("standard", "adaptive"), epsilon = 0.00
   } else {
     fit = adaHuberReg(X, Y, epsilon, iteMax)
   }
-  return (fit)
+  return (list(coef = as.numeric(fit$coef), tau = fit$tau, iteration = fit$iteration))
 }
 
-#' @title Penalized Convolution-Type Smoothed Quantile Regression
-#' @description Fit sparse quantile regression models in high dimensions via regularized conquer methods with "lasso", "scad" and "mcp" penalties. For "scad" and "mcp", the iteratively reweighted \eqn{\ell_1}-penalized algorithm is complemented with a local adpative majorize-minimize algorithm.
+#' @title Regularized Adaptive Huber Regression
+#' @description Sparse regularized Huber regression models in high dimensions with \eqn{\ell_1} (lasso) penalty. The function implements a localized majorize-minimize algorithm with a gradient-based method.
 #' @param X A \eqn{n} by \eqn{p} design matrix. Each row is a vector of observation with \eqn{p} covariates. 
 #' @param Y An \eqn{n}-dimensional response vector.
-#' @param lambda (\strong{optional}) Regularization parameter. Default is 0.2.
-#' @param tau (\strong{optional}) Quantile level (between 0 and 1). Default is 0.5.
-#' @param kernel (\strong{optional}) A character string specifying the choice of kernel function. Default is "Gaussian". Choices are "Gaussian", "logistic", "uniform", "parabolic" and "triangular".
-#' @param h (\strong{optional}) Bandwidth/smoothing parameter. Default is \eqn{\max\{0.5 * (log(p) / n)^{0.25}, 0.05\}}.
-#' @param penalty (\strong{optional}) A character string specifying the penalty. Default is "lasso". The other two options are "scad" and "mcp".
-#' @param para (\strong{optional}) A constant parameter for "scad" and "mcp". Do not need to specify if the penalty is lasso. The default values are 3.7 for "scad" and 3 for "mcp".
-#' @param epsilon (\strong{optional}) A tolerance level for the stopping rule. The iteration will stop when the maximum magnitude of the change of coefficient updates is less than \code{epsilon}. Default is 0.001.
-#' @param iteMax (\strong{optional}) Maximum number of iterations. Default is 500.
+#' @param lambda (\strong{optional}) Regularization parameter. Must be positive. Default is 0.5.
+#' @param tau (\strong{optional}) The robustness parameter. If not specified or the input value is non-positive, a tuning-free principle is applied. Default is 0 (hence, tuning-free).
 #' @param phi0 (\strong{optional}) The initial quadratic coefficient parameter in the local adaptive majorize-minimize algorithm. Default is 0.01.
 #' @param gamma (\strong{optional}) The adaptive search parameter (greater than 1) in the local adaptive majorize-minimize algorithm. Default is 1.2.
-#' @param iteTight (\strong{optional}) Maximum number of tightening iterations in the iteratively reweighted \eqn{\ell_1}-penalized algorithm. Do not need to specify if the penalty is lasso. Default is 3.
+#' @param epsilon (\strong{optional}) Tolerance level of the gradient-based algorithm. The iteration will stop when the maximum magnitude of all the elements of the gradient is less than \code{tol}. Default is 1e-03.
+#' @param iteMax (\strong{optional}) Maximum number of iterations. Default is 500.
 #' @return An object containing the following items will be returned:
 #' \describe{
-#' \item{\code{coeff}}{A \eqn{(p + 1)} vector of estimated coefficients, including the intercept.}
-#' \item{\code{bandwidth}}{Bandwidth value.}
-#' \item{\code{tau}}{Quantile level.}
-#' \item{\code{kernel}}{Kernel function.}
-#' \item{\code{penalty}}{Penalty type.}
-#' \item{\code{lambda}}{Regularization parameter.}
-#' \item{\code{n}}{Sample size.}
-#' \item{\code{p}}{Number of the covariates.}
+#' \item{\code{coef}}{A \eqn{(p + 1)} vector of estimated sparse regression coefficients, including the intercept.}
+#' \item{\code{tau}}{The robustification parameter calibrated by the tuning-free principle (if the input is non-positive).}
+#' \item{\code{iteration}}{Number of iterations until convergence.}
+#' \item{\code{phi}}{The quadratic coefficient parameter in the local adaptive majorize-minimize algorithm.}
 #' }
-#' @references Fan, J., Liu, H., Sun, Q. and Zhang, T. (2018). I-LAMM for sparse learning: Simultaneous control of algorithmic complexity and statistical error. Ann. Statist. 46 814-841.
-#' @references Koenker, R. and Bassett, G. (1978). Regression quantiles. Econometrica 46 33-50.
-#' @references Tan, K. M., Wang, L. and Zhou, W.-X. (2021). High-dimensional quantile regression: convolution smoothing and concave regularization. J. Roy. Statist. Soc. Ser. B, to appear.
-#' @author Xuming He <xmhe@umich.edu>, Xiaoou Pan <xip024@ucsd.edu>, Kean Ming Tan <keanming@umich.edu>, and Wen-Xin Zhou <wez243@ucsd.edu>
-#' @seealso See \code{\link{conquer.cv.reg}} for regularized quantile regression with cross-validation.
+#' @references Pan, X., Sun, Q. and Zhou, W.-X. (2021). Iteratively reweighted l1-penalized robust regression. Electron. J. Stat., 15, 3287-3348.
+#' @references Sun, Q., Zhou, W.-X. and Fan, J. (2020). Adaptive Huber regression. J. Amer. Statist. Assoc., 115 254-265.
+#' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2021). A new principle for tuning-free Huber regression. Stat. Sinica, 31, 2153-2177.
+#' @seealso See \code{\link{adaHuber.cv.lasso}} for regularized adaptive Huber regression with cross-validation.
 #' @examples 
 #' n = 200; p = 500; s = 10
-#' beta = c(rep(1.5, s), rep(0, p - s))
+#' beta = c(rep(1.5, s + 1), rep(0, p - s))
 #' X = matrix(rnorm(n * p), n, p)
-#' Y = X %*% beta + rt(n, 2)
+#' err = rt(n, 2)
+#' Y = cbind(rep(1, n), X) %*% beta + err 
 #' 
-#' ## Regularized conquer with lasso penalty at tau = 0.8
-#' fit.lasso = conquer.reg(X, Y, lambda = 0.05, tau = 0.8, kernel = "Gaussian", penalty = "lasso")
+#' fit.lasso = adaHuber.lasso(X, Y, lambda = 0.5)
 #' beta.lasso = fit.lasso$coeff
-#' 
-#' #' ## Regularized conquer with scad penalty at tau = 0.8
-#' fit.scad = conquer.reg(X, Y, lambda = 0.13, tau = 0.8, kernel = "Gaussian", penalty = "scad")
-#' beta.scad = fit.scad$coeff
 #' @export 
-conquer.reg = function(X, Y, lambda = 0.2, tau = 0.5, kernel = c("Gaussian", "logistic", "uniform", "parabolic", "triangular"), h = 0.0, 
-                       penalty = c("lasso", "scad", "mcp"), para = NULL, epsilon = 0.001, iteMax = 500, phi0 = 0.01, gamma = 1.2, iteTight = 3) {
+adaHuber.lasso = function(X, Y, lambda = 0.5, tau = 0, phi0 = 0.01, gamma = 1.2, epsilon = 0.001, iteMax = 500) {
   if (nrow(X) != length(Y)) {
     stop("Error: the length of Y must be the same as the number of rows of X.")
-  }
-  if(tau <= 0 || tau >= 1) {
-    stop("Error: the quantile level tau must be in (0, 1).")
   }
   if (lambda <= 0) {
     stop("Error: lambda must be positive.")
@@ -157,40 +140,14 @@ conquer.reg = function(X, Y, lambda = 0.2, tau = 0.5, kernel = c("Gaussian", "lo
   if (min(colSds(X)) == 0) {
     stop("Error: at least one column of X is constant.")
   }
-  kernel = match.arg(kernel)
-  penalty = match.arg(penalty)
-  n = nrow(X)
-  p = ncol(X)
-  if (h <= 0.05) {
-    h = max(0.5 * (log(p) / n)^(0.25), 0.05);
-  }
-  type = 1
-  if (penalty == "lasso") {
-    para = 1.0
-  } else if (penalty == "scad") {
-    type = 2
-    if (is.null(para) || para <= 0) {
-      para = 3.7
-    }
-  } else if (penalty == "mcp") {
-    type = 3
-    if (is.null(para) || para <= 0) {
-      para = 3.0
-    }
-  }
-  rst = NULL
-  if (kernel == "Gaussian") {
-    rst = conquerHdGauss(X, Y, lambda, tau, h, type, phi0, gamma, epsilon, iteMax, iteTight, para)
-  } else if (kernel == "logistic") {
-    rst = conquerHdLogistic(X, Y, lambda, tau, h, type, phi0, gamma, epsilon, iteMax, iteTight, para)
-  } else if (kernel == "uniform") {
-    rst = conquerHdUnif(X, Y, lambda, tau, h, type, phi0, gamma, epsilon, iteMax, iteTight, para)
-  } else if (kernel == "parabolic") {
-    rst = conquerHdPara(X, Y, lambda, tau, h, type, phi0, gamma, epsilon, iteMax, iteTight, para)
+  fit = NULL
+  if (tau <= 0) {
+    fit = adaHuberLassoList(X, Y, lambda, phi0, gamma, epsilon, iteMax)
+    tau = fit$tau
   } else {
-    rst = conquerHdTrian(X, Y, lambda, tau, h, type, phi0, gamma, epsilon, iteMax, iteTight, para)
+    fit = huberLassoList(X, Y, lambda, tau, phi0, gamma, epsilon, iteMax)
   }
-  return (list(coeff = as.numeric(rst), bandwidth = h, tau = tau, kernel = kernel, penalty = penalty, lambda = lambda, n = n, p = p))
+  return (list(coef = as.numeric(fit$coef), tau = tau, iteration = fit$iteration, phi = fit$phi))
 }
 
 #' @title Cross-Validated Penalized Convolution-Type Smoothed Quantile Regression
