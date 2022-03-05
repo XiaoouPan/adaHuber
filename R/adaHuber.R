@@ -193,5 +193,5 @@ adaHuber.cv.lasso = function(X, Y, lambdaSeq = NULL, kfolds = 5, numLambda = 50,
   }
   folds = sample(rep(1:kfolds, ceiling(n / kfolds)), n)
   fit = cvAdaHuberLasso(X, Y, lambdaSeq, folds, kfolds, phi0, gamma, epsilon, iteMax)
-  return (list(coef = as.numeric(fit$coef), lambdaSeq = lambdaSeq, lambda = fit$lambda, tau = tau, iteration = fit$iteration, phi = fit$phi))
+  return (list(coef = as.numeric(fit$coef), lambdaSeq = lambdaSeq, lambda = fit$lambda, tau = fit$tau, iteration = fit$iteration, phi = fit$phi))
 }
