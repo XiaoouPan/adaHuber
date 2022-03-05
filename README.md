@@ -4,53 +4,41 @@
 
 ## Description
 
-This package implements the Huber mean estimator, Huber covariance matrix estimation, adaptive Huber regression and *l<sub>1</sub>*-regularized Huber regression (Huber-Lasso) estimators efficiently. For all these methods, the robustification parameter *&tau;* is calibrated via a tuning-free principle.
+This package implements the Huber-type estimator for mean, covariance matrix, regression and *l<sub>1</sub>*-regularized Huber regression (Huber-Lasso). For all these methods, the robustification parameter *&tau;* is calibrated via a tuning-free principle.
 
-Specifically, for Huber regression, assume the observed data vectors (*Y*, *X*) follow a linear model *Y = &theta;<sub>0</sub> + X &theta; + &epsilon;*, where *Y* is an *n*-dimensional response vector, *X* is an *n* &times; *d* design matrix, and *&epsilon;* is an *n*-vector of noise variables whose distributions can be asymmetric and/or heavy-tailed. The package computes the standard Huber's *M*-estimator when *d < n* and the Huber-Lasso estimator when *d > n*. The vector of coefficients *&theta;* and the intercept term *&theta;<sub>0</sub>* are estimated successively via a two-step procedure. See [Wang et al., 2020](https://www.math.ucsd.edu/~wez243/tfHuber.pdf) for more details of the two-step tuning-free framework.
+Specifically, for Huber regression, assume the observed data vectors (*Y*, *X*) follow a linear model *Y = &theta;<sub>0</sub> + X &theta; + &epsilon;*, where *Y* is an *n*-dimensional response vector, *X* is an *n* &times; *d* design matrix, and *&epsilon;* is an *n*-vector of noise variables whose distributions can be asymmetric and/or heavy-tailed. The package computes the standard Huber's *M*-estimator when *d < n* and the Huber-Lasso estimator when *d > n*. The vector of coefficients *&theta;* and the intercept term *&theta;<sub>0</sub>* are estimated successively via a two-step procedure. See [Wang et al., 2021](https://doi.org/10.5705/ss.202019.0045) for more details.
 
 ## Recent update
 
-2022-02-28
+**2022-03-04**
 
-We are updating the package and will submit a new version to CRAN soon.
+Version 1.1 is submitted to CRAN.
 
-The most efficient implementation of three functions `huberMean`, `huberCov`, `huberReg` in this package have been merged into another `R` library `FarmTest`, which has a [CRAN binary release](https://CRAN.R-project.org/package=FarmTest). To avoid the annoying compiling issues caused by this source package, and experience faster and more stable computation, we recommend installing `FarmTest`.
 
 ## Installation
 
-Install `tfHuber` from GitHub:
+Install `adaHuber` from CRAN
 
 ```r
-install.packages("devtools")
-library(devtools)
-devtools::install_github("XiaoouPan/tfHuber")
-library(tfHuber)
+install.packages("adaHuber")
 ```
 
 ## Common error messages
 
-First of all, to avoid most unexpected error messages, it is **strongly** recommended to update `R` to version >= 3.6.1.
+* Error: Compilation failed (with messages involving lgfortran, clang, etc.). **Solution**: This is a compilation error of Rcpp-based source packages. It happens when we recently submit a new version to CRAN, but it usually takes 3-5 days to build the binary package. Please use an older version or patiently wait for 3-5 days and then install the updated version.
 
-Besides, since the library `tfHuber` is coded in `Rcpp` and `RcppArmadillo`, when you first install it, the following two build tools are required:
+* Error: unable to load shared object.. Symbol not found: _EXTPTR_PTR. **Solution**: This issue is common in some specific versions of `R` when we load Rcpp-based libraries. It is an error in R caused by a minor change about `EXTPTR_PTR`. Upgrading R to 4.0.2 will solve the problem.
 
-1. Rtools for Windows OS or XCode Command Line Tools for Mac OS. See [this link](https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites) for details.
-
-2. gfortran binaries: see [here](https://gcc.gnu.org/wiki/GFortranBinaries#MacOS) for instructions.
-
-`tfHuber` should be working well after these steps. Some common error messages along with their solutions are collected below, and we'll keep updating them based on users' feedback:
-
-* Error: "...could not find build tools necessary to build FarmTest": Please see step 1 above.
-
-* Error: "library not found for -lgfortran/..": Please see step 2 above.
 
 ## Functions
 
-There are four functions in this package: 
+There are five functions in this package: 
 
-* `huberMean`: Huber mean estimation.
-* `huberCov`: Huber covariance matrix estimation.
-* `huberReg`: Adaptive Huber regression.
-* `cvHuberLasso`: *K*-fold cross-validated Huber-Lasso regression.
+* `adaHuber.mean`: Adaptive Huber mean estimation.
+* `adaHuber.cov`: Adaptive Huber covariance estimation.
+* `adaHuber.reg`: Adaptive Huber regression.
+* `adaHuber.lasso`: Adaptive Huber-Lasso regression.
+* `adaHuber.cv.lasso`: Cross-validated adaptive Huber-Lasso regression.
 
 ## Getting help
 
