@@ -1,7 +1,7 @@
 Package: adaHuber
 Type: Package
 Title: Adaptive Huber Estimation and Regression
-Version: 1.2
+Version: 1.1
 Date: 2022-03-04
 Authors@R: c(person("Xiaoou", "Pan", email = "xip024@ucsd.edu", role = c("aut", "cre")), 
              person("Wen-Xin", "Zhou", email = "wez243@ucsd.edu", role = "aut"))
