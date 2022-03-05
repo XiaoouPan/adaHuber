@@ -1,5 +1,5 @@
 #' @title Adaptive Huber Mean Estimation
-#' @description Adaptive Huber mean estimator from a data sample, with \eqn{\tau} determined by a tuning-free principle.
+#' @description Adaptive Huber mean estimator from a data sample, with robustification parameter \eqn{\tau} determined by a tuning-free principle.
 #' @param X An \eqn{n}-dimensional data vector.
 #' @param epsilon (\strong{optional}) The tolerance level in the iterative estimation procedure, iteration will stop when \eqn{|\mu_new - \mu_old| < \epsilon}. The defalut value is 1e-4.
 #' @param iteMax (\strong{optional}) Maximum number of iterations. Default is 500.
@@ -9,8 +9,8 @@
 #' \item{\code{tau}}{The robustness parameter determined by the tuning-free principle.}
 #' \item{\code{iteration}}{The number of iterations in the estimation procedure.}
 #' }
+#' @references Huber, P. J. (1964). Robust estimation of a location parameter. Ann. Math. Statist., 35, 73–101.
 #' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2021). A new principle for tuning-free Huber regression. Stat. Sinica 31 2153-2177.
-#' @author Xiaoou Pan <xip024@ucsd.edu> and Wen-Xin Zhou <wez243@ucsd.edu>
 #' @examples 
 #' n = 1000
 #' mu = 2
@@ -23,8 +23,8 @@ adaHuber.mean = function(X, epsilon = 0.0001, iteMax = 500) {
 }
 
 #' @title Adaptive Huber Covariance Estimation
-#' @description Adaptive Huber covariance estimator from a data sample, with \eqn{\tau} determined by a tuning-free principle.
-#' @details The observed data \eqn{X} is an \eqn{n} by \eqn{p} matrix. The distribution of each entry can be asymmetrix and/or heavy-tailed. The function outputs a robust estimator for the covariance matrix of \eqn{X}.
+#' @description Adaptive Huber covariance estimator from a data sample, with robustification parameter \eqn{\tau} determined by a tuning-free principle.
+#' @details The observed data \eqn{X} is an \eqn{n} by \eqn{p} matrix. The distribution of each entry can be asymmetrix and/or heavy-tailed. The function outputs a robust estimator for the covariance matrix of \eqn{X}. For the input matrix \code{X}, both low-dimension (\eqn{p < n}) and high-dimension (\eqn{p > n}) are allowed.
 #' @param X An \eqn{n} by \eqn{p} data matrix.
 #' @param epsilon (\strong{optional}) The tolerance level in the iterative estimation procedure. The problem is converted to mean estimation, and the stopping rule is the same as \code{adaHuber.mean}. The defalut value is 1e-4.
 #' @param iteMax (\strong{optional}) Maximum number of iterations. Default is 500.
@@ -33,8 +33,9 @@ adaHuber.mean = function(X, epsilon = 0.0001, iteMax = 500) {
 #' \item{\code{means}}{The Huber estimators for column means. A \eqn{p}-dimensional vector.}
 #' \item{\code{cov}}{The Huber estimator for covariance matrix. A \eqn{p} by \eqn{p} matrix.}
 #' }
+#' @references Huber, P. J. (1964). Robust estimation of a location parameter. Ann. Math. Statist., 35, 73–101.
 #' @references Ke, Y., Minsker, S., Ren, Z., Sun, Q. and Zhou, W.-X. (2019). User-friendly covariance estimation for heavy-tailed distributions. Statis. Sci. 34 454-471.
-#' @author Xiaoou Pan <xip024@ucsd.edu> and Wen-Xin Zhou <wez243@ucsd.edu>
+#' @seealso \code{\link{adaHuber.mean}} for adaptive Huber mean estimation.
 #' @examples 
 #' n = 100
 #' p = 20
@@ -47,124 +48,54 @@ adaHuber.cov = function(X, epsilon = 0.0001, iteMax = 500) {
   return (huberCov(X, epsilon, iteMax))
 }
 
-#' @title Convolution-Type Smoothed Quantile Regression
-#' @description Estimation and inference for conditional linear quantile regression models using a convolution smoothed approach. Efficient gradient-based methods are employed for fitting both a single model and a regression process over a quantile range. Normal-based and (multiplier) bootstrap confidence intervals for all slope coefficients are constructed.
+#' @title Adaptive Huber Regression
+#' @description Adaptive Huber regression from a data sample, with robustification parameter \eqn{\tau} determined by a tuning-free principle.
 #' @param X A \eqn{n} by \eqn{p} design matrix. Each row is a vector of observation with \eqn{p} covariates. Number of observations \eqn{n} must be greater than number of covariates \eqn{p}.
 #' @param Y An \eqn{n}-dimensional response vector.
-#' @param tau (\strong{optional}) The desired quantile level. Default is 0.5. Value must be between 0 and 1.
-#' @param kernel (\strong{optional})  A character string specifying the choice of kernel function. Default is "Gaussian". Choices are "Gaussian", "logistic", "uniform", "parabolic" and "triangular".
-#' @param h (\strong{optional}) Bandwidth/smoothing parameter. Default is \eqn{\max\{((log(n) + p) / n)^{0.4}, 0.05\}}. The default will be used if the input value is less than 0.05.
-#' @param checkSing (\strong{optional}) A logical flag. Default is FALSE. If \code{checkSing = TRUE}, then it will check if the design matrix is singular before running conquer. 
-#' @param tol (\strong{optional}) Tolerance level of the gradient descent algorithm. The iteration will stop when the maximum magnitude of all the elements of the gradient is less than \code{tol}. Default is 1e-04.
-#' @param iteMax (\strong{optional}) Maximum number of iterations. Default is 5000.
-#' @param ci (\strong{optional}) A logical flag. Default is FALSE. If \code{ci = TRUE}, then three types of confidence intervals (percentile, pivotal and normal) will be constructed via multiplier bootstrap.
-#' @param alpha (\strong{optional}) Miscoverage level for each confidence interval. Default is 0.05.
-#' @param B (\strong{optional}) The size of bootstrap samples. Default is 1000.
+#' @param method An \strong{optional} character string specifying the method to calibrate the robustification parameter \eqn{\tau}. Two choices are "standard"(default) and "adaptive". See Wang et al.(2020) for details.
+#' @param epsilon (\strong{optional}) Tolerance level of the gradient descent algorithm. The iteration will stop when the maximum magnitude of all the elements of the gradient is less than \code{tol}. Default is 1e-04.
+#' @param iteMax (\strong{optional}) Maximum number of iterations. Default is 500.
 #' @return An object containing the following items will be returned:
 #' \describe{
-#' \item{\code{coeff}}{A \eqn{(p + 1)}-vector of estimated quantile regression coefficients, including the intercept.}
+#' \item{\code{coef}}{A \eqn{(p + 1)}-vector of estimated regression coefficients, including the intercept.}
+#' \item{\code{tau}}{The robustification parameter calibrated by the tuning-free principle.}
 #' \item{\code{ite}}{Number of iterations until convergence.}
-#' \item{\code{residual}}{An \eqn{n}-vector of fitted residuals.}
-#' \item{\code{bandwidth}}{Bandwidth value.}
-#' \item{\code{tau}}{Quantile level.}
-#' \item{\code{kernel}}{Kernel function.}
-#' \item{\code{n}}{Sample size.}
-#' \item{\code{p}}{Number of covariates.}
-#' \item{\code{perCI}}{The percentile confidence intervals for regression coefficients. Not available if \code{ci = FALSE}.}
-#' \item{\code{pivCI}}{The pivotal confidence intervals for regression coefficients. Not available if \code{ci = FALSE}.}
-#' \item{\code{normCI}}{The normal-based confidence intervals for regression coefficients. Not available if \code{ci = FALSE}.}
 #' }
-#' @references Barzilai, J. and Borwein, J. M. (1988). Two-point step size gradient methods. IMA J. Numer. Anal. 8 141–148.
-#' @references Fernandes, M., Guerre, E. and Horta, E. (2019). Smoothing quantile regressions. J. Bus. Econ. Statist., in press.
-#' @references He, X., Pan, X., Tan, K. M., and Zhou, W.-X. (2021+). Smoothed quantile regression for large-scale inference. J. Econometrics, in press.
-#' @references Koenker, R. and Bassett, G. (1978). Regression quantiles. Econometrica 46 33-50.
-#' @author Xuming He <xmhe@umich.edu>, Xiaoou Pan <xip024@ucsd.edu>, Kean Ming Tan <keanming@umich.edu>, and Wen-Xin Zhou <wez243@ucsd.edu>
-#' @seealso See \code{\link{conquer.process}} for smoothed quantile regression process.
-#' @examples 
-#' n = 500; p = 10
-#' beta = rep(1, p)
-#' X = matrix(rnorm(n * p), n, p)
-#' Y = X %*% beta + rt(n, 2)
+#' @references Huber, P. J. (1964). Robust estimation of a location parameter. Ann. Math. Statist., 35, 73–101.
+#' @references Sun, Q., Zhou, W.-X. and Fan, J. (2020). Adaptive Huber regression. J. Amer. Statist. Assoc., 115, 254-265.
+#' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2021). A new principle for tuning-free Huber regression. Stat. Sinica 31 2153-2177.
+#' @examples
+#' n = 200
+#' p = 10
+#' beta = rep(1.5, p + 1)
+#' X = matrix(rnorm(n * d), n, d)
+#' err = rt(n, 2)
+#' Y = cbind(1, X) %*% beta + err
 #' 
-#' ## Smoothed quantile regression with Gaussian kernel
-#' fit.Gauss = conquer(X, Y, tau = 0.5, kernel = "Gaussian")
-#' beta.hat.Gauss = fit.Gauss$coeff
+#' fit.huber = adaHuber.reg(X, Y, method = "standard")
+#' beta.huber = fit.huber$coef
 #' 
-#' ## Smoothe quantile regression with uniform kernel
-#' fit.unif = conquer(X, Y, tau = 0.5, kernel = "uniform")
-#' beta.hat.unif = fit.unif$coeff
-#' 
-#' ## Construct three types of confidence intervals via multiplier bootstrap
-#' fit = conquer(X, Y, tau = 0.5, kernel = "Gaussian", ci = TRUE)
-#' ci.per = fit$perCI
-#' ci.piv = fit$pivCI
-#' ci.norm = fit$normCI
+#' fit.adahuber = adaHuber.reg(X, Y, method = "adaptive")
+#' beta.adahuber = fit.adahuber$coef
 #' @export 
-conquer = function(X, Y, tau = 0.5, kernel = c("Gaussian", "logistic", "uniform", "parabolic", "triangular"), h = 0.0, checkSing = FALSE, tol = 0.0001, 
-                   iteMax = 5000, ci = FALSE, alpha = 0.05, B = 1000) {
+adaHuber.reg = function(X, Y, method = c("standard", "adaptive"), epsilon = 0.0001, iteMax = 500) {
   if (nrow(X) != length(Y)) {
     stop("Error: the length of Y must be the same as the number of rows of X.")
   }
   if (ncol(X) >= nrow(X)) {
     stop("Error: the number of columns of X cannot exceed the number of rows of X.")
   }
-  if(tau <= 0 || tau >= 1) {
-    stop("Error: the quantile level tau must be in (0, 1).")
-  }
-  if (alpha <= 0 || alpha >= 1) {
-    stop("Error: the nominal level alpha must be in (0, 1).")
-  }
   if (min(colSds(X)) == 0) {
     stop("Error: at least one column of X is constant.")
   }
-  if (checkSing && rankMatrix(X)[1] < ncol(X)) {
-    stop("Error: the design matrix X is singular.")
-  }
-  kernel = match.arg(kernel)
-  if (!ci) {
-    rst = NULL
-    if (kernel == "Gaussian") {
-      rst = smqrGauss(X, Y, tau, h, tol = tol, iteMax = iteMax)
-    } else if (kernel == "logistic") {
-      rst = smqrLogistic(X, Y, tau, h, tol = tol, iteMax = iteMax)
-    } else if (kernel == "uniform") {
-      rst = smqrUnif(X, Y, tau, h, tol = tol, iteMax = iteMax)
-    } else if (kernel == "parabolic") {
-      rst = smqrPara(X, Y, tau, h, tol = tol, iteMax = iteMax)
-    } else {
-      rst = smqrTrian(X, Y, tau, h, tol = tol, iteMax = iteMax)
-    }
-    return (list(coeff = as.numeric(rst$coeff), ite = rst$ite, residual = as.numeric(rst$residual), bandwidth = rst$bandwidth, tau = tau, 
-                 kernel = kernel, n = nrow(X), p = ncol(X)))
+  method = match.arg(method)
+  fit = NULL
+  if (method == "standard") {
+    fit = huberReg(X, Y, epsilon, constTau = 1.345, iteMax)
   } else {
-    rst = coeff = multiBeta = NULL
-    if (kernel == "Gaussian") {
-      rst = smqrGauss(X, Y, tau, h, tol = tol, iteMax = iteMax)
-      coeff = as.numeric(rst$coeff)
-      multiBeta = smqrGaussInf(X, Y, coeff, nrow(X), ncol(X), h, tau, B, tol, iteMax)
-    } else if (kernel == "logistic") {
-      rst = smqrLogistic(X, Y, tau, h, tol = tol, iteMax = iteMax)
-      coeff = as.numeric(rst$coeff)
-      multiBeta = smqrLogisticInf(X, Y, coeff, nrow(X), ncol(X), h, tau, B, tol, iteMax)
-    } else if (kernel == "uniform") {
-      rst = smqrUnif(X, Y, tau, h, tol = tol, iteMax = iteMax)
-      coeff = as.numeric(rst$coeff)
-      multiBeta = smqrUnifInf(X, Y, coeff, nrow(X), ncol(X), h, tau, B, tol, iteMax)
-    } else if (kernel == "parabolic") {
-      rst = smqrPara(X, Y, tau, h, tol = tol, iteMax = iteMax)
-      coeff = as.numeric(rst$coeff)
-      multiBeta = smqrParaInf(X, Y, coeff, nrow(X), ncol(X), h, tau, B, tol, iteMax)
-    } else {
-      rst = smqrTrian(X, Y, tau, h, tol = tol, iteMax = iteMax)
-      coeff = as.numeric(rst$coeff)
-      multiBeta = smqrTrianInf(X, Y, coeff, nrow(X), ncol(X), h, tau, B, tol, iteMax)
-    }
-    ciList = getPivCI(coeff, multiBeta, alpha)
-    z = qnorm(1 - alpha / 2)
-    normCI = as.matrix(getNormCI(coeff, rowSds(multiBeta), z))
-    return (list(coeff = coeff, ite = rst$ite, residual = as.numeric(rst$residual), bandwidth = rst$bandwidth, tau = tau, kernel = kernel, 
-                 n = nrow(X), p = ncol(X), perCI = as.matrix(ciList$perCI), pivCI = as.matrix(ciList$pivCI), normCI = normCI))
+    fit = adaHuberReg(X, Y, epsilon, iteMax)
   }
+  return (fit)
 }
 
 #' @title Penalized Convolution-Type Smoothed Quantile Regression
