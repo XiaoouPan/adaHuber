@@ -17,7 +17,7 @@ adaHuber.reg(
 
 \item{Y}{An \eqn{n}-dimensional response vector.}
 
-\item{method}{An \strong{optional} character string specifying the method to calibrate the robustification parameter \eqn{\tau}. Two choices are "standard"(default) and "adaptive". See Wang et al.(2020) for details.}
+\item{method}{(\strong{optional}) A character string specifying the method to calibrate the robustification parameter \eqn{\tau}. Two choices are "standard"(default) and "adaptive". See Wang et al.(2021) for details.}
 
 \item{epsilon}{(\strong{optional}) Tolerance level of the gradient descent algorithm. The iteration will stop when the maximum magnitude of all the elements of the gradient is less than \code{tol}. Default is 1e-04.}
 
@@ -38,7 +38,7 @@ Adaptive Huber regression from a data sample, with robustification parameter \eq
 n = 200
 p = 10
 beta = rep(1.5, p + 1)
-X = matrix(rnorm(n * d), n, d)
+X = matrix(rnorm(n * p), n, p)
 err = rt(n, 2)
 Y = cbind(1, X) \%*\% beta + err
 

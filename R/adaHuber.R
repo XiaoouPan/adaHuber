@@ -38,7 +38,7 @@ adaHuber.mean = function(X, epsilon = 0.0001, iteMax = 500) {
 #' @seealso \code{\link{adaHuber.mean}} for adaptive Huber mean estimation.
 #' @examples 
 #' n = 100
-#' p = 20
+#' p = 5
 #' X = matrix(rt(n * p, 3), n, p)
 #' fit.cov = adaHuber.cov(X)
 #' fit.cov$means
@@ -53,7 +53,7 @@ adaHuber.cov = function(X, epsilon = 0.0001, iteMax = 500) {
 #' @description Adaptive Huber regression from a data sample, with robustification parameter \eqn{\tau} determined by a tuning-free principle.
 #' @param X A \eqn{n} by \eqn{p} design matrix. Each row is a vector of observation with \eqn{p} covariates. Number of observations \eqn{n} must be greater than number of covariates \eqn{p}.
 #' @param Y An \eqn{n}-dimensional response vector.
-#' @param method An \strong{optional} character string specifying the method to calibrate the robustification parameter \eqn{\tau}. Two choices are "standard"(default) and "adaptive". See Wang et al.(2020) for details.
+#' @param method (\strong{optional}) A character string specifying the method to calibrate the robustification parameter \eqn{\tau}. Two choices are "standard"(default) and "adaptive". See Wang et al.(2021) for details.
 #' @param epsilon (\strong{optional}) Tolerance level of the gradient descent algorithm. The iteration will stop when the maximum magnitude of all the elements of the gradient is less than \code{tol}. Default is 1e-04.
 #' @param iteMax (\strong{optional}) Maximum number of iterations. Default is 500.
 #' @return An object containing the following items will be returned:
@@ -69,7 +69,7 @@ adaHuber.cov = function(X, epsilon = 0.0001, iteMax = 500) {
 #' n = 200
 #' p = 10
 #' beta = rep(1.5, p + 1)
-#' X = matrix(rnorm(n * d), n, d)
+#' X = matrix(rnorm(n * p), n, p)
 #' err = rt(n, 2)
 #' Y = cbind(1, X) %*% beta + err
 #' 
@@ -85,9 +85,6 @@ adaHuber.reg = function(X, Y, method = c("standard", "adaptive"), epsilon = 0.00
   }
   if (ncol(X) >= nrow(X)) {
     stop("Error: the number of columns of X cannot exceed the number of rows of X.")
-  }
-  if (min(colSds(X)) == 0) {
-    stop("Error: at least one column of X is constant.")
   }
   method = match.arg(method)
   fit = NULL
@@ -137,9 +134,6 @@ adaHuber.lasso = function(X, Y, lambda = 0.5, tau = 0, phi0 = 0.01, gamma = 1.2,
   if (lambda <= 0) {
     stop("Error: lambda must be positive.")
   }
-  if (min(colSds(X)) == 0) {
-    stop("Error: at least one column of X is constant.")
-  }
   fit = NULL
   if (tau <= 0) {
     fit = adaHuberLassoList(X, Y, lambda, phi0, gamma, epsilon, iteMax)
@@ -188,18 +182,15 @@ adaHuber.cv.lasso = function(X, Y, lambdaSeq = NULL, kfolds = 5, numLambda = 50,
   if (nrow(X) != length(Y)) {
     stop("Error: the length of Y must be the same as the number of rows of X.")
   }
-  if (min(colSds(X)) == 0) {
-    stop("Error: at least one column of X is constant.")
-  }
   if (!is.null(lambdaSeq) && min(lambdaSeq) <= 0) {
     stop("Error: all lambda's must be positive.")
   }
+  n = nrow(X)
   if (is.null(lambdaSeq)) {
     lambdaMax = max(abs(t(X) %*% Y)) / n
     lambdaMin = 0.01 * lambdaMax
-    lambdaSeq = exp(seq(log(lambdaMin), log(lambdaMax), length.out = nlambda))
-  } 
-  n = nrow(X)
+    lambdaSeq = exp(seq(log(lambdaMin), log(lambdaMax), length.out = numLambda))
+  }
   folds = sample(rep(1:kfolds, ceiling(n / kfolds)), n)
   fit = cvAdaHuberLasso(X, Y, lambdaSeq, folds, kfolds, phi0, gamma, epsilon, iteMax)
   return (list(coef = as.numeric(fit$coef), lambdaSeq = lambdaSeq, lambda = fit$lambda, tau = tau, iteration = fit$iteration, phi = fit$phi))

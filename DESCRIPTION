@@ -11,6 +11,6 @@ License: GPL-3
 Encoding: UTF-8
 URL: https://github.com/XiaoouPan/adaHuber
 SystemRequirements: C++11
-Imports: Rcpp (>= 1.0.3), matrixStats
+Imports: Rcpp (>= 1.0.3)
 LinkingTo: Rcpp, RcppArmadillo (>= 0.9.850.1.0)
 RoxygenNote: 7.1.1

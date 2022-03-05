@@ -28,7 +28,7 @@ The observed data \eqn{X} is an \eqn{n} by \eqn{p} matrix. The distribution of e
 }
 \examples{
 n = 100
-p = 20
+p = 5
 X = matrix(rt(n * p, 3), n, p)
 fit.cov = adaHuber.cov(X)
 fit.cov$means
