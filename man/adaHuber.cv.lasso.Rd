@@ -50,7 +50,7 @@ An object containing the following items will be returned:
 Sparse regularized adaptive Huber regressionwith "lasso" penalty. The function implements a localized majorize-minimize algorithm with a gradient-based method. The regularization parameter \eqn{\lambda} is selected by cross-validation, and the robustification parameter \eqn{\tau} is determined by a tuning-free principle.
 }
 \examples{
-n = 200; p = 500; s = 10
+n = 100; p = 200; s = 5
 beta = c(rep(1.5, s + 1), rep(0, p - s))
 X = matrix(rnorm(n * p), n, p)
 err = rt(n, 2)
