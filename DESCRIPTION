@@ -2,7 +2,7 @@ Package: adaHuber
 Type: Package
 Title: Adaptive Huber Estimation and Regression
 Version: 1.2
-Date: 2022-02-25
+Date: 2022-03-04
 Authors@R: c(person("Xiaoou", "Pan", email = "xip024@ucsd.edu", role = c("aut", "cre")), 
              person("Wen-Xin", "Zhou", email = "wez243@ucsd.edu", role = "aut"))
 Description: Huber-type estimation for mean, covariance and (regularized) regression. For all the methods, the robustification parameter tau is chosen by a tuning-free principle.
@@ -11,6 +11,6 @@ License: GPL-3
 Encoding: UTF-8
 URL: https://github.com/XiaoouPan/adaHuber
 SystemRequirements: C++11
-Imports: Rcpp (>= 1.0.3)
+Imports: Rcpp (>= 1.0.3), matrixStats
 LinkingTo: Rcpp, RcppArmadillo (>= 0.9.850.1.0)
 RoxygenNote: 7.1.1
