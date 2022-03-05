@@ -44,66 +44,73 @@ There are five functions in this package:
 
 Help on the functions can be accessed by typing `?`, followed by function name at the R command prompt. 
 
-For example, `?huberReg` will present a detailed documentation with inputs, outputs and examples of the function `huberReg`.
+For example, `?adaHuber.reg` will present a detailed documentation with inputs, outputs and examples of the function `adaHuber.reg`.
 
 ## Examples 
 
-First, we present an example of Huber mean estimation. We generate data from a log-normal distribution, which is asymmetric and heavy-tailed. We estimate its mean by the tuning-free Huber mean estimator.
+First, we present an example of Huber mean estimation. We generate data from a *t* distribution, which is heavy-tailed. We estimate its mean by the tuning-free Huber mean estimator.
 
 ```r
-library(tfHuber)
+library(adaHuber)
 n = 1000
-X = rlnorm(n, 0, 1.5) - exp(1.5^2 / 2)
-meanList = huberMean(X)
-hMean = meanList$mu
+mu = 2
+X = rt(n, 2) + mu
+fit.mean = adaHuber.mean(X)
+fit.mean$mu
 ```
 
-Then we present an example of Huber covariance matrix estimation. We generate data from *t* distribution with df = 3, which is heavy-tailed. We estimate its covariance matrix by the method proposed in [Ke et al., 2019](https://arxiv.org/abs/1811.01520).
+Then we present an example of Huber covariance matrix estimation. We generate data from *t* distribution with df = 3, which is heavy-tailed.
 
 ```r
-library(tfHuber)
 n = 100
-d = 50
-X = matrix(rt(n * d, df = 3), n, d) / sqrt(3)
-hubCov = huberCov(X)
+p = 5
+X = matrix(rt(n * p, 3), n, p)
+fit.cov = adaHuber.cov(X)
+fit.cov$cov
 ```
 
-Next, we present an example of adaptive Huber regression. Here we generate data from a linear model *Y = X &theta; + &epsilon;*, where *&epsilon;* follows a log-normal distribution, and estimate the intercept and coefficients by tuning-free Huber regression.
+Next, we present an example of adaptive Huber regression. Here we generate data from a linear model *Y = X &theta; + &epsilon;*, where *&epsilon;* follows a *t* distribution, and estimate the intercept and coefficients by tuning-free Huber regression.
 
 ```r
-library(tfHuber)
-n = 500
-d = 5
-thetaStar = rep(3, d + 1)
-X = matrix(rnorm(n * d), n, d)
-error = rlnorm(n, 0, 1.5) - exp(1.5^2 / 2)
-Y = as.numeric(cbind(rep(1, n), X) %*% thetaStar + error)
-listHuber = huberReg(X, Y)
-thetaHuber = listHuber$theta
+n = 200
+p = 10
+beta = rep(1.5, p + 1)
+X = matrix(rnorm(n * p), n, p)
+err = rt(n, 2)
+Y = cbind(1, X) %*% beta + err
+
+fit.adahuber = adaHuber.reg(X, Y, method = "adaptive")
+beta.adahuber = fit.adahuber$coef
 ```
 
-Finally, we illustrate the use of *l<sub>1</sub>*-regularized Huber regression. Again, we generate data from a linear model *Y = X &theta; + &epsilon;*, where *&theta;* is a high-dimensional vector, and *&epsilon;* is from a log-normal distribution. We estimate the intercept and coefficients by Huber-Lasso regression, where the regularization parameter *&lambda;* is calibrated by *K*-fold cross-validation, and the robustification parameter *&tau;* is chosen by a tuning-free procedure.
+Finally, we illustrate the use of *l<sub>1</sub>*-regularized Huber regression. Again, we generate data from a linear model *Y = X &theta; + &epsilon;*, where *&theta;* is a high-dimensional vector, and *&epsilon;* is from a *t* distribution. We estimate the intercept and coefficients by Huber-Lasso regression, where the regularization parameter *&lambda;* is calibrated by *K*-fold cross-validation, and the robustification parameter *&tau;* is chosen by a tuning-free procedure.
 
 ```r
-library(tfHuber)
-n = 100
-d = 200
-s = 5
-thetaStar = c(rep(3, s + 1), rep(0, d - s))
-X = matrix(rnorm(n * d), n, d)
-error = rlnorm(n, 0, 1.5) - exp(1.5^2 / 2)
-Y = as.numeric(cbind(rep(1, n), X) %*% thetaStar + error)
-listHuberLasso = cvHuberLasso(X, Y)
-thetaHuberLasso = listHuberLasso$theta
+n = 100; p = 200; s = 5
+beta = c(rep(1.5, s + 1), rep(0, p - s))
+X = matrix(rnorm(n * p), n, p)
+err = rt(n, 2)
+Y = cbind(rep(1, n), X) %*% beta + err 
+ 
+fit.lasso = adaHuber.cv.lasso(X, Y)
+beta.lasso = fit.lasso$coef
 ```
 
 ## License
 
-GPL (>= 2)
+GPL-3.0
+
+## System requirements 
+
+C++11
 
 ## Author(s)
 
 Xiaoou Pan <xip024@ucsd.edu>, Wen-Xin Zhou <wez243@ucsd.edu> 
+
+## Maintainer
+
+Xiaoou Pan <xip024@ucsd.edu>
 
 ## References
 
