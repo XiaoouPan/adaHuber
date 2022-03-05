@@ -169,7 +169,7 @@ adaHuber.lasso = function(X, Y, lambda = 0.5, tau = 0, phi0 = 0.01, gamma = 1.2,
 #' @references Wang, L., Zheng, C., Zhou, W. and Zhou, W.-X. (2021). A new principle for tuning-free Huber regression. Stat. Sinica, 31, 2153-2177.
 #' @seealso See \code{\link{adaHuber.lasso}} for regularized adaptive Huber regression with a specified \eqn{lambda}.
 #' @examples 
-#' n = 200; p = 500; s = 10
+#' n = 100; p = 200; s = 5
 #' beta = c(rep(1.5, s + 1), rep(0, p - s))
 #' X = matrix(rnorm(n * p), n, p)
 #' err = rt(n, 2)
