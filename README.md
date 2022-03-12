@@ -10,9 +10,9 @@ Specifically, for Huber regression, assume the observed data vectors (*Y*, *X*) 
 
 ## Recent update
 
-**2022-03-04**
+**2022-03-08**
 
-Version 1.1 is submitted to CRAN.
+Version 1.1 is available on [CRAN](https://CRAN.R-project.org/package=adaHuber).
 
 
 ## Installation
@@ -69,7 +69,7 @@ fit.cov = adaHuber.cov(X)
 fit.cov$cov
 ```
 
-Next, we present an example of adaptive Huber regression. Here we generate data from a linear model *Y = X &theta; + &epsilon;*, where *&epsilon;* follows a *t* distribution, and estimate the intercept and coefficients by tuning-free Huber regression.
+Next, we present an example of adaptive Huber regression. Here we generate data from a linear model *Y = X &beta; + &epsilon;*, where *&epsilon;* follows a *t* distribution, and estimate the intercept and coefficients by tuning-free Huber regression.
 
 ```r
 n = 200
@@ -83,7 +83,7 @@ fit.adahuber = adaHuber.reg(X, Y, method = "adaptive")
 beta.adahuber = fit.adahuber$coef
 ```
 
-Finally, we illustrate the use of *l<sub>1</sub>*-regularized Huber regression. Again, we generate data from a linear model *Y = X &theta; + &epsilon;*, where *&theta;* is a high-dimensional vector, and *&epsilon;* is from a *t* distribution. We estimate the intercept and coefficients by Huber-Lasso regression, where the regularization parameter *&lambda;* is calibrated by *K*-fold cross-validation, and the robustification parameter *&tau;* is chosen by a tuning-free procedure.
+Finally, we illustrate the use of *l<sub>1</sub>*-regularized Huber regression. Again, we generate data from a linear model *Y = X &beta; + &epsilon;*, where *&beta;* is a high-dimensional vector, and *&epsilon;* is from a *t* distribution. We estimate the intercept and coefficients by Huber-Lasso regression, where the regularization parameter *&lambda;* is calibrated by *K*-fold cross-validation, and the robustification parameter *&tau;* is chosen by a tuning-free procedure.
 
 ```r
 n = 100; p = 200; s = 5
