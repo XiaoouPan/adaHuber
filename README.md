@@ -1,12 +1,12 @@
 # adaHuber
 
-**Ada**ptive **Huber** Estimation and Regression
+**Ada**ptive **Huber**-type Estimation and Regression
 
 ## Description
 
 This package implements the Huber-type estimator for mean, covariance matrix, regression and *l<sub>1</sub>*-regularized Huber regression (Huber-Lasso). For all these methods, the robustification parameter *&tau;* is calibrated via a tuning-free principle.
 
-Specifically, for Huber regression, assume the observed data vectors (*Y*, *X*) follow a linear model *Y = &theta;<sub>0</sub> + X &theta; + &epsilon;*, where *Y* is an *n*-dimensional response vector, *X* is an *n* &times; *d* design matrix, and *&epsilon;* is an *n*-vector of noise variables whose distributions can be asymmetric and/or heavy-tailed. The package computes the standard Huber's *M*-estimator when *d < n* and the Huber-Lasso estimator when *d > n*. The vector of coefficients *&theta;* and the intercept term *&theta;<sub>0</sub>* are estimated successively via a two-step procedure. See [Wang et al., 2021](https://doi.org/10.5705/ss.202019.0045) for more details.
+Specifically, for Huber regression, assume the observed data vectors (*Y*, *X*) follow a linear model *Y = &beta;<sub>0</sub> + X &beta; + &epsilon;*, where *Y* is an *n*-dimensional response vector, *X* is an *n* &times; *p* design matrix, and *&epsilon;* is an *n*-vector of noise variables whose distributions can be asymmetric and/or heavy-tailed. The package computes the standard Huber's *M*-estimator when *d < n* and the Huber-Lasso estimator when *d > n*. The vector of coefficients *&beta;* and the intercept term *&beta;<sub>0</sub>* are estimated successively via a two-step procedure. See [Wang et al., 2021](https://doi.org/10.5705/ss.202019.0045) for more details.
 
 ## Recent update
 
